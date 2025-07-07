@@ -9,6 +9,7 @@ import {
   login,
   loginFailure,
   loginSuccess,
+  logout,
   register,
   registerFailure,
   registerSuccess,
@@ -40,10 +41,10 @@ export class AuthEffects {
             this.toast.error(error);
 
             return of(loginFailure({ error }));
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   loginSuccess$ = createEffect(
@@ -59,9 +60,9 @@ export class AuthEffects {
           this.toast.success('Login successful!');
 
           this.router.navigate(['/']);
-        })
+        }),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   register$ = createEffect(() =>
@@ -84,10 +85,10 @@ export class AuthEffects {
             this.toast.error(error);
 
             return of(registerFailure({ error }));
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   registerSuccess$ = createEffect(
@@ -103,8 +104,22 @@ export class AuthEffects {
           this.toast.success('Registration successful!');
 
           this.router.navigate(['/']);
-        })
+        }),
       ),
-    { dispatch: false }
+    { dispatch: false },
+  );
+
+  logout$ = createEffect(
+    () =>
+      this.actions.pipe(
+        ofType(logout),
+        tap(() => {
+          console.log('logout emitted!');
+          localStorage.clear();
+          this.toast.success('Logged out successfully!');
+          this.router.navigateByUrl('/auth/login');
+        }),
+      ),
+    { dispatch: false },
   );
 }

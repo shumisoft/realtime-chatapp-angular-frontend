@@ -18,10 +18,10 @@ export class UserService {
     return this.http.patch<User>(`${this.userGateway}/me`, payload);
   }
 
-  getUserById(userId: string): Observable<User> {
+  getUserByUsername(username: string): Observable<User> {
     return this.http.get<User>(`${this.userGateway}/lookup`, {
       params: {
-        username: userId,
+        username,
       },
     });
   }

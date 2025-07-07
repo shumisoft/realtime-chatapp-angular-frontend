@@ -2,6 +2,20 @@
   <app-profile-card
     [loading]="loading$"
     [userData]="userData$"
-    [isPrincipalUser]="isPrincipleUser()"
+    [isPrincipalUser]="(isPrincipleUser$ | async) ?? false"
+    (logout)="openLogoutModal()"
   />
 </div>
+
+@if (showLogoutModal) {
+  <app-confirmation-dialog
+    dialogText="Are you sure you want to logout?"
+    primaryButtonText="Log out"
+    secondaryButtonText="Cancel"
+    primaryButtonColor="bg-red-500"
+    secondaryButtonColor="bg-gray-400"
+    (primaryButtonAction)="onLogoutConfirmed()"
+    (secondaryButtonAction)="closeLogoutModal()"
+    [loading]="logoutLoader"
+  />
+}

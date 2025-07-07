@@ -4,6 +4,7 @@ import {
   login,
   loginFailure,
   loginSuccess,
+  logout,
   register,
   registerFailure,
   registerSuccess,
@@ -55,5 +56,7 @@ export const authReducer = createReducer(
     ...state,
     loading: false,
     error,
-  }))
+  })),
+
+  on(logout, () => initialState),
 );

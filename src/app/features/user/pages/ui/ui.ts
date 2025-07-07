@@ -9,11 +9,14 @@ import { catchError, filter, map, Observable, of, switchMap, take, tap } from 'r
 import { User } from '../../../../core/models/user.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../core/services/user/user.service';
+import { CommonModule } from '@angular/common';
+import { ConfirmationDialog } from '../../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { logout } from '../../../../core/store/auth/auth.actions';
 
 @Component({
   selector: 'app-ui',
   standalone: true,
-  imports: [ProfileCardComponent],
+  imports: [ProfileCardComponent, CommonModule, ConfirmationDialog],
   templateUrl: './ui.html',
   styleUrls: ['./ui.css'],
 })
@@ -28,15 +31,18 @@ export class Ui {
 
   readonly principalUser$ = this.store.select(selectPrincipleUser);
 
-  username$!: Observable<string | null>;
+  readonly username$ = this.route.paramMap.pipe(map((params) => params.get('username')));
   readonly userData$!: Observable<User | null>;
-  isPrincipleUser = signal(false);
+  readonly isPrincipleUser$ = this.username$.pipe(map((username) => username === 'me'));
   private username!: string | null;
 
+  showLogoutModal = false;
+  logoutLoader = false;
+
   constructor() {
-    this.toast.loading('Fetching Profile', { id: 'fetching-profile' });
     this.principalUser$.pipe(take(1)).subscribe((user) => {
       if (!user?.userId) {
+        this.toast.loading('Fetching Profile', { id: 'fetching-profile' });
         this.store.dispatch(getPrincipalUser());
       }
     });
@@ -54,14 +60,14 @@ export class Ui {
           this.router.navigate(['..', 'me'], { relativeTo: this.route });
         }
         if (this.username === 'me') {
-          this.isPrincipleUser.set(true);
+          // this.isPrincipleUser.set(true);
           try {
             this.toast.close('fetching-profile');
           } catch (e) {}
           return of(principleUser as unknown as User);
         }
         if (this.username) {
-          return this.userService.getUserById(this.username).pipe(
+          return this.userService.getUserByUsername(this.username).pipe(
             tap(() => this.toast.close('fetching-profile')),
             catchError((err) => {
               this.toast.close('fetching-profile');
@@ -85,5 +91,19 @@ export class Ui {
         return of(null);
       }),
     );
+  }
+
+  openLogoutModal(): void {
+    console.log('[openLogoutModal] logout event emitted!');
+    this.showLogoutModal = true;
+  }
+
+  onLogoutConfirmed(): void {
+    console.log('[onLogoutConfirmed] logout event emitted!');
+    this.store.dispatch(logout())
+  }
+
+  closeLogoutModal(): void {
+    this.showLogoutModal = false;
   }
 }

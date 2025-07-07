@@ -1,5 +1,5 @@
 import { EditUserRequest } from './../../../../core/models/user.models';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { map, Observable } from 'rxjs';
 import { User, UserState } from '../../../../core/models/user.models';
@@ -24,6 +24,8 @@ export class ProfileCardComponent implements OnInit {
   @Input() loading!: Observable<boolean>;
   @Input() userData!: Observable<User | null>;
   @Input() isPrincipalUser!: boolean;
+
+  @Output() logout = new EventEmitter<void>();
 
   form: any = {};
   editField: Record<string, boolean> = {};
@@ -55,5 +57,9 @@ export class ProfileCardComponent implements OnInit {
       console.log(`Updated ${field} to`, this.form[field]);
     }
     this.editField[field] = false;
+  }
+
+  onLogout(): void {
+    this.logout.emit();
   }
 }
