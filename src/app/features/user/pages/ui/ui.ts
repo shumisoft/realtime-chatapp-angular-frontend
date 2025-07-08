@@ -10,7 +10,7 @@ import { User } from '../../../../core/models/user.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../core/services/user/user.service';
 import { CommonModule } from '@angular/common';
-import { ConfirmationDialog } from '../../../../shared/components/confirmation-dialog/confirmation-dialog';
+import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
 import { logout } from '../../../../core/store/auth/auth.actions';
 
 @Component({
