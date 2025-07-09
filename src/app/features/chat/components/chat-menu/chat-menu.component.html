@@ -1,11 +1,17 @@
-<div class="flex w-full bg-top-bar px-4 h-16 items-center">
+<div
+  class="flex w-full bg-top-bar px-4 h-16 items-center"
+  [title]="isDirectMessage ? 'Profile details' : 'Group Details'"
+>
   @if (selectedChatRoom$ | async) {
     <app-avatar class="h-10 w-10" />
-    <div class="ml-2 flex flex-col items-start justify-center">
-      <h2 class="text-lg leading-5 font-medium">
+    <div
+      class="ml-4 flex flex-col items-start justify-center hover:cursor-pointer"
+      (click)="onChatMenuClick()"
+    >
+      <h2 class="text-lg leading-6 font-medium">
         {{ roomName(selectedChatRoom$ | async, principalUser$ | async) }}
       </h2>
-      <p class="text-sm text-gray-500">
+      <p class="text-xs text-gray-500">
         {{ roomSubtitle(selectedChatRoom$ | async) }}
       </p>
     </div>

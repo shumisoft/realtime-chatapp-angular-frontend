@@ -1,12 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import { Store } from '@ngrx/store';
-import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { tap } from 'rxjs';
 import { ChatRoom, ChatRoomType } from '../../../../core/models/message.model';
+import { UserState } from '../../../../core/models/user.models';
+import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
-import { User, UserState } from '../../../../core/models/user.models';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 
 @Component({
   selector: 'app-chat-menu',
@@ -16,15 +17,31 @@ import { User, UserState } from '../../../../core/models/user.models';
 })
 export class ChatMenuComponent implements OnInit {
   private readonly store = inject(Store);
+  private readonly router = inject(Router);
+
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   readonly principalUser$ = this.store.select(selectPrincipleUser);
+
+  private currentChatRoom: ChatRoom | null = null;
+  private currentPrincipalUser: UserState | null = null;
 
   isDirectMessage!: boolean;
 
   constructor() {
     this.selectedChatRoom$
       .pipe(
-        tap((chatroom) => (this.isDirectMessage = chatroom?.type === ChatRoomType.DIRECT_MESSAGE)),
+        tap((chatroom) => {
+          this.isDirectMessage = chatroom?.type === ChatRoomType.DIRECT_MESSAGE;
+          this.currentChatRoom = chatroom;
+        }),
+      )
+      .subscribe();
+
+    this.principalUser$
+      .pipe(
+        tap((user) => {
+          this.currentPrincipalUser = user;
+        }),
       )
       .subscribe();
   }
@@ -35,7 +52,7 @@ export class ChatMenuComponent implements OnInit {
     let isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
     return isDirectMessage
       ? 'Last Seen: WIP'
-      : this.formatUserList(chatRoom?.members.map((member) => member.user.username));
+      : this.formatUserList(chatRoom?.members.map((member) => member.user.fullName));
   }
 
   roomName(chatRoom: ChatRoom | null, principaluser: UserState | null) {
@@ -52,5 +69,29 @@ export class ChatMenuComponent implements OnInit {
     return usernames.length > 3
       ? `${usernames.slice(0, 3).join(', ')} (+${usernames.length - 3} more)`
       : usernames.join(', ');
+  }
+
+  onChatMenuClick() {
+    const chatRoom = this.currentChatRoom;
+    const principalUser = this.currentPrincipalUser;
+
+    if (!chatRoom) return;
+
+    // For DM
+    const isDirectMessage = chatRoom.type === ChatRoomType.DIRECT_MESSAGE;
+
+    if (isDirectMessage) {
+      const otherUser = chatRoom.members
+        .map((m) => m.user)
+        .find((u) => u.userId !== principalUser?.userId);
+
+      if (otherUser?.username) {
+        this.router.navigate(['/user', otherUser.username]);
+      }
+      return;
+    }
+
+    // For Groups [PUBLIC, PRIVATE]
+    this.router.navigate(['/group', chatRoom.chatId]);
   }
 }
