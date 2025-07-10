@@ -1,11 +1,10 @@
 <div class="flex items-center gap-2 p-3 border-t border-gray-300 bg-white">
-  <input
-    type="text"
+  <textarea
     [(ngModel)]="message"
     (keyup.enter)="onSend()"
     placeholder="Type a message..."
     class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
+  ></textarea>
 
   <i class="fa-solid fa-paperclip text-xl text-gray-800 hover:text-gray-600"></i>
 

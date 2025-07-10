@@ -12,7 +12,7 @@
   >
     {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
-  <p class="mr-10">{{ message.content }}</p>
+  <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
   <div class="flex">
     <p class="ml-auto text-[.55rem]">{{ formattedTime(message.timestamp) }}</p>
   </div>
