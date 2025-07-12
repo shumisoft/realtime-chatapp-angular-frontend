@@ -9,6 +9,9 @@ import {
   loadMyChatRoomsSuccess,
   selectChatRoom,
   updateChatRoomSuccess,
+  loadChatRoomById,
+  loadChatRoomByIdSuccess,
+  loadChatRoomByIdFailure,
 } from './chat-room.actions';
 
 export interface ChatRoomState {
@@ -52,6 +55,31 @@ export const chatRoomReducer = createReducer(
   })),
 
   on(loadMyChatRoomsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+
+  // Load Single Room by ID
+  on(loadChatRoomById, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+
+  on(loadChatRoomByIdSuccess, (state, { data }) => {
+    const exists = state.rooms.some((r) => r.chatId === data.chatId);
+
+    return {
+      ...state,
+      loading: false,
+      rooms: exists
+        ? state.rooms.map((r) => (r.chatId === data.chatId ? data : r)) // Update existing
+        : [...state.rooms, data], // Add new (don't use [data, ...state.rooms])
+    };
+  }),
+
+  on(loadChatRoomByIdFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,

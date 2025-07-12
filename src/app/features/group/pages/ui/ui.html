@@ -1,0 +1,19 @@
+@if (viewModel$ | async; as vm) {
+  @if (vm.loading && !vm.group) {
+    <div class="min-h-screen flex items-center justify-center text-gray-500 text-sm">
+      Loading group details…
+    </div>
+  } @else if (vm.group) {
+    <app-group-card
+      [group]="vm.group"
+      [isGroupAdmin]="vm.isGroupAdmin"
+      [principalUserId]="vm.principalUserId"
+      (updateGroup)="onUpdateGroup($event)"
+      (removeMember)="onRemoveMember($event)"
+    />
+  } @else {
+    <div class="min-h-screen flex items-center justify-center text-gray-500 text-sm">
+      Chat room not found!
+    </div>
+  }
+}

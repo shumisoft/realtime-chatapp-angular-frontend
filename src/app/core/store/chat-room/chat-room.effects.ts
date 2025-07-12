@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ChatRoomService } from '../../services/chat-room/chat-room.service';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, mergeMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap, switchMap } from 'rxjs/operators';
 
 import {
   loadMyChatRooms,
@@ -18,6 +18,9 @@ import {
   deleteChatRoom,
   deleteChatRoomFailure,
   deleteChatRoomSuccess,
+  loadChatRoomById,
+  loadChatRoomByIdSuccess,
+  loadChatRoomByIdFailure,
 } from './chat-room.actions';
 
 import { upsertUser } from '../users/users.actions';
@@ -76,6 +79,32 @@ export class ChatRoomEffects {
     ),
   );
 
+  /** Load single chat room by ID + upsert users */
+  loadRoomById$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadChatRoomById),
+      mergeMap(({ chatId }) =>
+        this.chatService.getById(chatId).pipe(
+          mergeMap((data: ChatRoom) => {
+            const users = this.extractUsersFromRoom(data);
+
+            return [
+              loadChatRoomByIdSuccess({ data }),
+              ...users.map((u) => upsertUser({ user: u })),
+            ];
+          }),
+          catchError((err) =>
+            of(
+              loadChatRoomByIdFailure({
+                error: err?.error?.message || 'Failed to load room',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   /** Create room + upsert members + upsert latest message user */
   createRoom$ = createEffect(() =>
     this.actions$.pipe(
@@ -101,18 +130,23 @@ export class ChatRoomEffects {
     ),
   );
 
-  /** Update room + upsert all users */
+  // /** Update room + upsert all users */
+  /** Update room + refetch to get updated data */
   updateRoom$ = createEffect(() =>
     this.actions$.pipe(
       ofType(updateChatRoom),
-      exhaustMap(({ chatId, payload }) =>
+      switchMap(({ chatId, payload }) =>
         this.chatService.update(chatId, payload).pipe(
-          mergeMap((data: ChatRoom) => {
+          mergeMap(() => {
             this.toast.success('Chat room updated');
 
-            const users = this.extractUsersFromRoom(data);
+            // Commented this dut to inconsistency in backend, reponse of update is just a success message not the updated room
+            // const users = this.extractUsersFromRoom(data);
 
-            return [updateChatRoomSuccess({ data }), ...users.map((u) => upsertUser({ user: u }))];
+            // return [updateChatRoomSuccess({ data }), ...users.map((u) => upsertUser({ user: u }))];
+
+            // For now [quick fix]: Just return this single action
+            return [loadChatRoomById({ chatId })];
           }),
           catchError((err) =>
             of(

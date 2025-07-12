@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,10 @@ export const routes: Routes = [
   {
     path: 'user',
     loadChildren: () => import('./features/user/user.routes').then((m) => m.USER_ROUTES),
+  },
+  {
+    path: 'group',
+    loadChildren: () => import('./features/group/group.routes').then((m) => m.GROUP_ROUTES),
   },
   {
     path: 'me',

@@ -17,6 +17,22 @@ export const loadMyChatRoomsFailure = createAction(
   props<{ error: string }>(),
 );
 
+// load single chat room
+export const loadChatRoomById = createAction(
+  '[ChatRoom] Load ChatRoom By ID',
+  props<{ chatId: number }>(),
+);
+
+export const loadChatRoomByIdSuccess = createAction(
+  '[ChatRoom] Load ChatRoom By ID Success',
+  props<{ data: ChatRoom }>(),
+);
+
+export const loadChatRoomByIdFailure = createAction(
+  '[ChatRoom] Load ChatRoom By ID Failure',
+  props<{ error: string }>(),
+);
+
 // Create
 export const createChatRoom = createAction(
   '[ChatRoom] Create ChatRoom',

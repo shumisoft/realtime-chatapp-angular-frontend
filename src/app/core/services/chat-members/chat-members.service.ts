@@ -8,17 +8,17 @@ import { ChatRoomMember } from '../../models/message.model';
 })
 export class ChatMembersService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `http://localhost:5421/chat/members`;
+  private readonly baseUrl = `http://localhost:5421/rooms`;
 
   getMembers(chatId: number): Observable<ChatRoomMember[]> {
-    return this.http.get<ChatRoomMember[]>(`${this.baseUrl}/rooms/${chatId}/members`);
+    return this.http.get<ChatRoomMember[]>(`${this.baseUrl}/${chatId}/members`);
   }
 
   addMember(chatId: number, body: Partial<ChatRoomMember>) {
-    return this.http.post(`${this.baseUrl}/rooms/${chatId}/members`, body);
+    return this.http.post(`${this.baseUrl}/${chatId}/members`, body);
   }
 
   removeMember(chatId: number, memberId: string) {
-    return this.http.delete(`${this.baseUrl}/rooms/${chatId}/members/${memberId}`);
+    return this.http.delete(`${this.baseUrl}/${chatId}/members/${memberId}`);
   }
 }

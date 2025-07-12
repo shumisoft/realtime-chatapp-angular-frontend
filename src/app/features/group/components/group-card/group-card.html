@@ -1,0 +1,139 @@
+@if (true) {
+  <div class="p-6 max-w-lg rounded-xl shadow-xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6 gap-2 flex flex-col">
+      <!-- Group Name -->
+      <div class="flex items-center gap-2 group">
+        @if (!editField.name) {
+          <h1 class="text-2xl font-semibold">{{ group.name }}</h1>
+
+          @if (isGroupAdmin) {
+            <button
+              class="hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
+              (click)="startEdit('name', group.name)"
+              title="Click to edit group name"
+            >
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          }
+        } @else {
+          <input
+            class="border-b text-2xl font-semibold focus:outline-none focus:border-b-2"
+            [(ngModel)]="form.name"
+            autofocus
+          />
+          <button
+            class="text-gray-400 hover:text-blue-500 cursor-pointer"
+            (click)="saveEdit('name', group.name)"
+            title="Click to save group name"
+          >
+            <i class="fa-solid fa-check"></i>
+          </button>
+        }
+      </div>
+
+      <!-- Group Description -->
+      <div class="flex items-center gap-2 group">
+        @if (!editField.description) {
+          <p class="text-gray-500">{{ group.description }}</p>
+
+          @if (isGroupAdmin) {
+            <button
+              class="hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
+              (click)="startEdit('description', group.description)"
+              title="Click to edit group description"
+            >
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          }
+        } @else {
+          <input
+            class="border-b w-full text-gray-500 focus:outline-none focus:border-b-2"
+            [(ngModel)]="form.description"
+            autofocus
+          />
+          <button
+            class="text-gray-400 hover:text-blue-500"
+            (click)="saveEdit('description', group.description)"
+            title="Click to save group description"
+          >
+            <i class="fa-solid fa-check"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Members -->
+    <div>
+      <h2 class="text-sm font-medium text-gray-500 mb-3">Members ({{ group.members.length }})</h2>
+
+      <div>
+        @for (member of group.members; track member.userId) {
+          <div class="relative flex items-center gap-3 hover:bg-gray-100 rounded-md p-3">
+            <!-- Avatar + Info (clickable to profile) -->
+            <div
+              class="flex items-center gap-3 flex-1 cursor-pointer"
+              [routerLink]="'/user/' + member.user.username"
+              title="Profile details"
+            >
+              <app-avatar class="h-10 w-10" [url]="member?.user?.avatar || null" />
+
+              <div class="flex flex-col">
+                <span class="font-medium">
+                  {{ member.userId === principalUserId ? 'You' : member.user.fullName }}
+                </span>
+                <span class="text-sm text-gray-500">{{ member.user.bio }}</span>
+              </div>
+
+              @if (member.admin) {
+                <span class="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-md">
+                  Group admin
+                </span>
+              }
+            </div>
+
+            <!-- Three-dot menu (only for admin, only for non-self members) -->
+            @if (isGroupAdmin && member.userId !== principalUserId) {
+              <div class="relative">
+                <button
+                  class="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
+                  title="Member options"
+                  (click)="toggleMemberMenu(member.userId, $event)"
+                >
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+
+                @if (openMenuUserId === member.userId) {
+                  <div
+                    class="absolute right-0 top-8 z-50 w-44 bg-white rounded-md shadow-lg border border-gray-100 py-1 overflow-hidden"
+                  >
+                    <!-- Remove member -->
+                    <button
+                      class="w-full flex items-center gap-1 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 cursor-pointer transition-colors"
+                      (click)="onRemoveMember(member.userId)"
+                    >
+                      <i class="fa-solid fa-circle-minus w-4 text-base"></i>
+                      Remove member
+                    </button>
+
+                    <!-- Placeholder for future options -->
+                    <!-- 
+                <button class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">
+                  <i class="fa-solid fa-shield w-4"></i>
+                  Make admin
+                </button> 
+                -->
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="p-10 max-w-lg rounded-xl shadow-lg mx-auto">
+    <p class="mt-6 text-gray-500 text-center">Waiting for group details...</p>
+  </div>
+}

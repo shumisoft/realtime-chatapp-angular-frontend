@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { HotToastService } from '@ngxpert/hot-toast';
 import { catchError, map, mergeMap, of } from 'rxjs';
 import { ChatMembersService } from '../../services/chat-members/chat-members.service';
 import { upsertUser } from '../users/users.actions';
@@ -12,11 +13,13 @@ import {
   removeMember,
   removeMemberSuccess,
 } from './chat-room-members.actions';
+import { loadChatRoomById } from '../chat-room/chat-room.actions';
 
 @Injectable()
 export class ChatMembersEffects {
   private readonly actions$ = inject(Actions);
   private readonly service = inject(ChatMembersService);
+  private readonly toast = inject(HotToastService);
 
   /** Load all members for a chat room */
   loadMembers$ = createEffect(() =>
@@ -59,8 +62,18 @@ export class ChatMembersEffects {
       ofType(removeMember),
       mergeMap(({ chatId, userId }) =>
         this.service.removeMember(chatId, userId).pipe(
-          map(() => removeMemberSuccess({ chatId, userId })),
-          catchError((error) => of(loadMembersFailure({ chatId, error }))),
+          mergeMap(() => {
+            // map(() => removeMemberSuccess({ chatId, userId })),
+            this.toast.success('Member removed'); // ← NEW
+            return [
+              removeMemberSuccess({ chatId, userId }),
+              loadChatRoomById({ chatId }), // ← Refetch room to get updated members
+            ];
+          }),
+          catchError((error) => {
+            this.toast.error('Failed to remove member'); // ← NEW
+            return of(loadMembersFailure({ chatId, error }));
+          }),
         ),
       ),
     ),
