@@ -1,0 +1,59 @@
+<!-- Backdrop -->
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <!-- Modal Card -->
+  <div
+    class="bg-white w-full max-w-lg rounded-md shadow-lg px-6 py-4"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Title and Close Button -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Start New Chat</h2>
+      <div title="Close" class="rounded-full text-gray-500 hover:text-black cursor-pointer">
+        <i class="fa-solid fa-xmark" (click)="close.emit()"></i>
+      </div>
+    </div>
+
+    <!-- Search Area -->
+    <div
+      class="flex border-2 justify-between items-center gap-3 px-4 py-3 rounded-full text-gray-500 bg-gray-100 mb-7"
+      [class.border-primary-500]="searchInputFocused()"
+      [class.border-white]="!searchInputFocused()"
+    >
+      <i class="fa-brands fa-sistrix"></i>
+      <input
+        class="text-sm w-full focus:outline-none"
+        placeholder="User search will look like this..."
+        (input)="onSearch($any($event.target).value)"
+        (focus)="onSearchInputFocus()"
+        (blur)="onSearchInputBlur()"
+      />
+    </div>
+
+    <!-- User Card Area -->
+    <div class="h-[204px] overflow-y-auto">
+      @if (isLoading()) {
+        <div class="flex justify-center items-center h-full text-gray-500">Searching...</div>
+      } @else if (searchResults?.length) {
+        @for (user of searchResults; track $index) {
+          <div
+            class="flex items-center gap-3 hover:bg-gray-100 rounded-md p-3 cursor-pointer"
+            (click)="onUserClick(user)"
+            [title]="`Start chat with ${user?.fullName} @${user?.username}`"
+          >
+            <app-avatar class="h-10 w-10" />
+            <div class="flex flex-col">
+              <span class="font-medium">{{ user.fullName }} </span>
+              <span class="text-sm text-gray-500">@{{ user.username }}</span>
+            </div>
+          </div>
+        }
+      } @else if (searchResults?.length === 0) {
+        <div class="flex justify-center items-center h-full text-gray-500">No results found</div>
+      } @else {
+        <div class="flex justify-center items-center h-full text-gray-500">
+          Search name or username
+        </div>
+      }
+    </div>
+  </div>
+</div>

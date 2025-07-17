@@ -1,9 +1,23 @@
 <div class="flex flex-col w-full h-full border-r border-gray-300">
-  <app-sidebar-menu />
-  <div class="h-full overflow-scroll">
+  <app-sidebar-menu (logout)="onLogout()" />
+  <div class="h-full overflow-y-auto">
     <!-- {{ rooms$ | async | json }} -->
     @for (room of rooms$ | async; track room.chatId) {
       <app-chat-room-card [chatroom]="room" />
     }
   </div>
 </div>
+
+<!-- Logout -->
+@if (showLogoutModal) {
+  <app-confirmation-dialog
+    dialogText="Are you sure you want to logout?"
+    primaryButtonText="Log out"
+    secondaryButtonText="Cancel"
+    primaryButtonColor="bg-red-500"
+    secondaryButtonColor="bg-gray-400"
+    (primaryButtonAction)="onLogoutConfirmed()"
+    (secondaryButtonAction)="closeLogoutModal()"
+    [loading]="logoutLoader"
+  />
+}

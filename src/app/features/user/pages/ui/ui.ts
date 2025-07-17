@@ -1,17 +1,17 @@
-import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { catchError, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { User } from '../../../../core/models/user.models';
+import { UserService } from '../../../../core/services/user/user.service';
+import { logout } from '../../../../core/store/auth/auth.actions';
+import { selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 import { getPrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
-import { ProfileCardComponent } from '../../components/profile-card/profile-card.component';
-import { catchError, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
-import { User } from '../../../../core/models/user.models';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../../../../core/services/user/user.service';
-import { CommonModule } from '@angular/common';
 import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
-import { logout } from '../../../../core/store/auth/auth.actions';
+import { ProfileCardComponent } from '../../components/profile-card/profile-card.component';
 
 @Component({
   selector: 'app-ui',
@@ -94,13 +94,11 @@ export class Ui {
   }
 
   openLogoutModal(): void {
-    console.log('[openLogoutModal] logout event emitted!');
     this.showLogoutModal = true;
   }
 
   onLogoutConfirmed(): void {
-    console.log('[onLogoutConfirmed] logout event emitted!');
-    this.store.dispatch(logout())
+    this.store.dispatch(logout());
   }
 
   closeLogoutModal(): void {

@@ -8,22 +8,43 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ChatRoom } from '../../../../core/models/message.model';
-import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ChatRoom, ChatRoomMember } from '../../../../core/models/message.model';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
 
 @Component({
   standalone: true,
   selector: 'app-group-card',
-  imports: [CommonModule, FormsModule, AvatarComponent, RouterLink],
+  imports: [CommonModule, FormsModule, AvatarComponent, RouterLink, ConfirmationDialog],
   templateUrl: './group-card.html',
   styleUrl: './group-card.css',
 })
 export class GroupCard implements OnChanges {
-  constructor() {
-    console.log('gruop card constructor');
-  }
+  @Input({ required: true }) group!: ChatRoom;
+  @Input({ required: true }) isGroupAdmin = false;
+  @Input() principalUserId: string | null = null;
+
+  @Output() updateGroup = new EventEmitter<any>();
+  @Output() addMember = new EventEmitter<void>();
+  @Output() removeMember = new EventEmitter<string>();
+  @Output() deleteGroup = new EventEmitter<number>();
+
+  editField: Record<'name' | 'description', boolean> = {
+    name: false,
+    description: false,
+  };
+
+  form: Partial<Pick<ChatRoom, 'name' | 'description'>> = {};
+  openMenuUserId: string | null = null;
+
+  showRemoveMemberConfirmationDialog = false;
+  memberToRemove: ChatRoomMember | null = null;
+
+  showDeleteGroupDialog = false;
+
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const groupChange = changes['group'];
@@ -45,20 +66,6 @@ export class GroupCard implements OnChanges {
       }
     }
   }
-  @Input({ required: true }) group!: ChatRoom;
-  @Input({ required: true }) isGroupAdmin = false;
-  @Input() principalUserId: string | null = null;
-
-  @Output() updateGroup = new EventEmitter<any>();
-  @Output() removeMember = new EventEmitter<string>();
-
-  editField: Record<'name' | 'description', boolean> = {
-    name: false,
-    description: false,
-  };
-
-  form: Partial<Pick<ChatRoom, 'name' | 'description'>> = {};
-  openMenuUserId: string | null = null;
 
   // Close dropdown when clicking outside
   @HostListener('document:click')
@@ -98,10 +105,42 @@ export class GroupCard implements OnChanges {
     this.openMenuUserId = this.openMenuUserId === userId ? null : userId;
   }
 
-  onRemoveMember(userId: string) {
-    if (confirm('Are you sure you want to remove this member from the group?')) {
-      this.removeMember.emit(userId);
-    }
+  onAddMember() {
+    this.addMember.emit();
+  }
+
+  onRemoveMember(member: ChatRoomMember) {
+    this.memberToRemove = member;
+    this.showRemoveMemberConfirmationDialog = true;
     this.openMenuUserId = null;
+  }
+
+  resetRemoveDialog() {
+    this.showRemoveMemberConfirmationDialog = false;
+    this.memberToRemove = null;
+  }
+
+  confirmRemove() {
+    if (this.memberToRemove) {
+      this.removeMember.emit(this.memberToRemove.userId);
+    }
+    this.resetRemoveDialog();
+  }
+
+  cancelRemove() {
+    this.resetRemoveDialog();
+  }
+
+  openDeleteGroupDialog() {
+    this.showDeleteGroupDialog = true;
+  }
+
+  confirmDeleteGroup() {
+    this.deleteGroup.emit(this.group.chatId);
+    this.closeDeleteGroupDialog();
+  }
+
+  closeDeleteGroupDialog() {
+    this.showDeleteGroupDialog = false;
   }
 }

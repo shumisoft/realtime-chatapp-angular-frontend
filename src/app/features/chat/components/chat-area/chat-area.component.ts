@@ -1,19 +1,20 @@
-import { Component, ElementRef, inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { ChatCardComponent } from '../chat-card/chat-card.component';
+import { CommonModule } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, Observable, tap, take, distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, map, Observable, take, tap } from 'rxjs';
 import { Message } from '../../../../core/models/message.model';
+import { MessageEventCommunicator } from '../../../../core/services/message-event-communicator/message-event-communicator';
+import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import {
   loadInitialMessages,
   loadOlderMessages,
 } from '../../../../core/store/message/message.actions';
-import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import {
   selectChatHasMore,
   selectMessageLoading,
   selectMessagesByChatId,
 } from '../../../../core/store/message/message.selectors';
-import { CommonModule } from '@angular/common';
+import { ChatCardComponent } from '../chat-card/chat-card.component';
 
 enum ScrollState {
   NONE,
@@ -31,6 +32,7 @@ enum ScrollState {
 })
 export class ChatAreaComponent implements OnInit, AfterViewInit {
   private readonly store = inject(Store);
+  private readonly messageEventCommunicator = inject(MessageEventCommunicator);
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   selectedChatRoomId!: number;
@@ -63,7 +65,7 @@ export class ChatAreaComponent implements OnInit, AfterViewInit {
             .select(selectMessagesByChatId(chatRoom.chatId))
             .pipe(take(1))
             .subscribe((list) => {
-              if (list.length === 0) {
+              if (list.length === 0 && !list[0]?.messageId) {
                 this.scrollState = ScrollState.INITIAL_BOTTOM;
                 this.store.dispatch(loadInitialMessages({ chatId: chatRoom.chatId }));
               }
@@ -96,6 +98,49 @@ export class ChatAreaComponent implements OnInit, AfterViewInit {
     });
 
     observer.observe(this.topSentinel.nativeElement);
+
+    this.selectedChatRoom$
+      .pipe(
+        tap((chatRoom) => {
+          if (!chatRoom) return;
+
+          this.selectedChatRoomId = chatRoom.chatId;
+
+          this.messageEventCommunicator.event$.subscribe((data) => {
+            if (this.selectedChatRoomId === data.chatRoomId) {
+              this.userReadingHistory = false;
+              this.scrollToBottom();
+            }
+          });
+
+          // Whenever chat changes -> always scroll to bottom
+          this.scrollState = ScrollState.SCROLL_BOTTOM_ON_CHAT_CHANGE;
+
+          this.store
+            .select(selectMessagesByChatId(chatRoom.chatId))
+            .pipe(take(1))
+            .subscribe((list) => {
+              if (list.length === 0 && !list[0]?.messageId) {
+                this.scrollState = ScrollState.INITIAL_BOTTOM;
+                this.store.dispatch(loadInitialMessages({ chatId: chatRoom.chatId }));
+              }
+            });
+
+          this.messages$ = this.store.select(selectMessagesByChatId(chatRoom.chatId)).pipe(
+            map((messages) =>
+              [...messages].sort(
+                (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+              ),
+            ),
+            distinctUntilChanged((a, b) => a.length === b.length),
+            tap((messages) => this.onMessagesChanged(messages)),
+          );
+
+          this.hasMore$ = this.store.select(selectChatHasMore(chatRoom.chatId));
+          this.loading$ = this.store.select(selectMessageLoading);
+        }),
+      )
+      .subscribe();
   }
 
   // ------------------------------------------

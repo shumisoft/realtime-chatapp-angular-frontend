@@ -4,7 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, filter, map, switchMap, take, tap } from 'rxjs';
 import { ChatRoom } from '../../../../core/models/message.model';
+import { User } from '../../../../core/models/user.models';
 import {
+  addMember,
+  removeMember,
+} from '../../../../core/store/chat-room-members/chat-room-members.actions';
+import {
+  deleteChatRoom,
   loadChatRoomById,
   updateChatRoom,
 } from '../../../../core/store/chat-room/chat-room.actions';
@@ -14,13 +20,13 @@ import {
 } from '../../../../core/store/chat-room/chat-room.selectors';
 import { getPrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
+import { AddMemberModal } from '../../components/add-member-modal/add-member-modal';
 import { GroupCard } from '../../components/group-card/group-card';
-import { removeMember } from '../../../../core/store/chat-room-members/chat-room-members.actions';
 
 @Component({
   standalone: true,
   selector: 'app-ui',
-  imports: [CommonModule, GroupCard],
+  imports: [CommonModule, GroupCard, AddMemberModal],
   templateUrl: './ui.html',
   styleUrl: './ui.css',
 })
@@ -30,6 +36,8 @@ export class Ui implements OnInit {
 
   readonly principalUser$ = this.store.select(selectPrincipleUser);
   readonly loading$ = this.store.select(selectChatRoomLoading);
+
+  isAddMemberModalOpen = false;
 
   readonly viewModel$ = this.route.paramMap.pipe(
     map((params) => Number(params.get('id'))),
@@ -60,6 +68,7 @@ export class Ui implements OnInit {
             isGroupAdmin: !!sortedGroup?.members.find(
               (m) => m.userId === principalUser?.userId && m.admin,
             ),
+            existingMemberIds: sortedGroup?.members.map((m) => m.userId) ?? [],
           };
         }),
       ),
@@ -75,8 +84,6 @@ export class Ui implements OnInit {
   }
 
   onUpdateGroup(payload: Partial<Pick<ChatRoom, 'name' | 'description'>>) {
-    console.log('[onUpdateGroup] recieved update group event!');
-
     // Get current chatId from route
     this.route.paramMap
       .pipe(
@@ -85,8 +92,6 @@ export class Ui implements OnInit {
         filter((chatId) => !!chatId),
       )
       .subscribe((chatId) => {
-        console.log('[onUpdateGroup] recieved update group event!', chatId);
-
         this.store.dispatch(
           updateChatRoom({
             chatId,
@@ -94,6 +99,43 @@ export class Ui implements OnInit {
           }),
         );
       });
+  }
+
+  openAddMemberModal() {
+    this.isAddMemberModalOpen = true;
+  }
+
+  closeAddMemberModal() {
+    this.isAddMemberModalOpen = false;
+  }
+
+  onAddMember() {
+    this.openAddMemberModal();
+  }
+
+  onUserSelected(user: User) {
+    if (!user?.userId) return;
+
+    this.route.paramMap
+      .pipe(
+        take(1),
+        map((params) => Number(params.get('id'))),
+        filter((chatId) => !!chatId),
+      )
+      .subscribe((chatId) => {
+        if (user?.userId) {
+          this.store.dispatch(
+            addMember({
+              chatId,
+              userId: user.userId,
+            }),
+          );
+        }
+
+        return;
+      });
+
+    this.closeAddMemberModal();
   }
 
   onRemoveMember(userId: string) {
@@ -104,7 +146,6 @@ export class Ui implements OnInit {
         filter((chatId) => !!chatId),
       )
       .subscribe((chatId) => {
-        console.log('event revieved to remove member with Id: ', { userId, chatId });
         this.store.dispatch(
           removeMember({
             chatId,
@@ -112,6 +153,10 @@ export class Ui implements OnInit {
           }),
         );
       });
+  }
+
+  onDeleteGroup(chatId: number) {
+    this.store.dispatch(deleteChatRoom({ chatId }));
   }
 
   // Optional: Clear selection when leaving

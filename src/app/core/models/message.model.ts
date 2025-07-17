@@ -17,6 +17,13 @@ export interface Message {
   edited: boolean;
 }
 
+export interface CreateChatRoomRequest {
+  type: ChatRoomType;
+  name: string;
+  description: string;
+  memberIds: string[];
+}
+
 export interface ChatRoom {
   chatId: number;
   name: string;

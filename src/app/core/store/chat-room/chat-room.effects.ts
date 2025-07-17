@@ -1,30 +1,30 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { ChatRoomService } from '../../services/chat-room/chat-room.service';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, mergeMap, switchMap } from 'rxjs/operators';
+import { ChatRoomService } from '../../services/chat-room/chat-room.service';
 
 import {
-  loadMyChatRooms,
-  loadMyChatRoomsFailure,
-  loadMyChatRoomsSuccess,
   createChatRoom,
   createChatRoomFailure,
   createChatRoomSuccess,
-  updateChatRoom,
-  updateChatRoomFailure,
-  updateChatRoomSuccess,
   deleteChatRoom,
   deleteChatRoomFailure,
   deleteChatRoomSuccess,
   loadChatRoomById,
-  loadChatRoomByIdSuccess,
   loadChatRoomByIdFailure,
+  loadChatRoomByIdSuccess,
+  loadMyChatRooms,
+  loadMyChatRoomsFailure,
+  loadMyChatRoomsSuccess,
+  selectChatRoom,
+  updateChatRoom,
+  updateChatRoomFailure,
 } from './chat-room.actions';
 
-import { upsertUser } from '../users/users.actions';
 import { ChatRoom } from '../../models/message.model';
+import { upsertUser } from '../users/users.actions';
 
 @Injectable()
 export class ChatRoomEffects {
@@ -109,24 +109,33 @@ export class ChatRoomEffects {
   createRoom$ = createEffect(() =>
     this.actions$.pipe(
       ofType(createChatRoom),
-      exhaustMap(({ payload }) =>
-        this.chatService.create(payload).pipe(
+      mergeMap(({ payload }) => {
+        this.toast.loading('Creating chat room', { id: 'create-room' }); // 🟡 instant feedback
+
+        return this.chatService.create(payload).pipe(
           mergeMap((data: ChatRoom) => {
-            this.toast.success('Chat room created');
+            this.toast.close('create-room');
+            this.toast.success('Chat room created!');
 
             const users = this.extractUsersFromRoom(data);
 
-            return [createChatRoomSuccess({ data }), ...users.map((u) => upsertUser({ user: u }))];
+            return [
+              createChatRoomSuccess({ data }),
+              selectChatRoom({ chatId: data.chatId }), // auto-select new chat-room
+              ...users.map((u) => upsertUser({ user: u })),
+            ];
           }),
-          catchError((err) =>
-            of(
-              createChatRoomFailure({
-                error: err?.error?.message || 'Failed to create room',
-              }),
-            ),
-          ),
-        ),
-      ),
+          catchError((err) => {
+            this.toast.close('create-room');
+
+            const error = err?.error?.message || 'Failed to create room';
+
+            this.toast.error(error);
+
+            return of(createChatRoomFailure({ error }));
+          }),
+        );
+      }),
     ),
   );
 
@@ -164,21 +173,27 @@ export class ChatRoomEffects {
   deleteRoom$ = createEffect(() =>
     this.actions$.pipe(
       ofType(deleteChatRoom),
-      exhaustMap(({ chatId }) =>
-        this.chatService.delete(chatId).pipe(
+      exhaustMap(({ chatId }) => {
+        this.toast.loading('Deleting chat room...', { id: 'delete-room' });
+
+        return this.chatService.delete(chatId).pipe(
           map(() => {
+            this.toast.close('delete-room');
             this.toast.success('Chat room deleted');
+
             return deleteChatRoomSuccess({ chatId });
           }),
-          catchError((err) =>
-            of(
-              deleteChatRoomFailure({
-                error: err?.error?.message || 'Failed to delete room',
-              }),
-            ),
-          ),
-        ),
-      ),
+          catchError((err) => {
+            this.toast.close('delete-room');
+
+            const error = err?.error?.message || 'Failed to delete room';
+
+            this.toast.error(error);
+
+            return of(deleteChatRoomFailure({ error }));
+          }),
+        );
+      }),
     ),
   );
 }

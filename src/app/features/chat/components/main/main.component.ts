@@ -1,10 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ChatAreaComponent } from '../chat-area/chat-area.component';
-import { ChatMenuComponent } from '../chat-menu/chat-menu.component';
-import { ChatInputAreaComponent } from '../chat-input-area/chat-input-area.component';
-import { Store } from '@ngrx/store';
-import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { CommonModule } from '@angular/common';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { take } from 'rxjs';
+import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
+import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
+import { ChatAreaComponent } from '../chat-area/chat-area.component';
+import { ChatInputAreaComponent } from '../chat-input-area/chat-input-area.component';
+import { ChatMenuComponent } from '../chat-menu/chat-menu.component';
 
 @Component({
   selector: 'app-main',
@@ -20,4 +22,18 @@ export class MainComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+
+  // ✅ ESC key handler
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: Event) {
+    const keyboardEvent = event as KeyboardEvent;
+
+    if (keyboardEvent.key === 'Escape') {
+      this.selectedChatRoom$.pipe(take(1)).subscribe((room) => {
+        if (room) {
+          this.store.dispatch(selectChatRoom({ chatId: null }));
+        }
+      });
+    }
+  }
 }

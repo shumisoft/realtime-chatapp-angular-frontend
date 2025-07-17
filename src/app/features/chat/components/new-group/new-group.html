@@ -1,0 +1,129 @@
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center">
+  <div
+    class="bg-white w-full max-w-lg rounded-md shadow-lg px-6 py-4"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Create New Group</h2>
+      <i
+        title="Close"
+        class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-black"
+        (click)="onClose()"
+      ></i>
+    </div>
+
+    <!-- Selected Users -->
+    @if (selectedUsers.length) {
+      <div class="flex flex-wrap gap-2 mb-4 max-h-24 overflow-y-auto">
+        @for (user of selectedUsers; track user.userId) {
+          <div
+            [title]="user?.fullName"
+            class="flex items-center gap-2 bg-gray-100 p-1 pr-2 rounded-full text-sm cursor-default"
+          >
+            <!-- Avatar -->
+            <app-avatar class="h-6 w-6 shrink-0" [url]="user.avatar || null" />
+
+            <!-- Username -->
+            <span class="text-gray-800 font-medium truncate max-w-[120px]">
+              @{{ user.username }}
+            </span>
+
+            <!-- Remove -->
+            <i
+              [title]="`Remove ${user?.fullName} from group`"
+              class="fa-solid fa-xmark text-xs cursor-pointer text-gray-500 hover:text-red-500"
+              (click)="removeUser(user.userId)"
+            ></i>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Reactive Form -->
+    <form [formGroup]="form" class="space-y-4">
+      <!-- Group Name -->
+      <div>
+        <input
+          formControlName="name"
+          placeholder="Group name..."
+          class="w-full border-b border-gray-300 px-2 py-2 focus:outline-none focus:border-primary-500 placeholder:text-gray-500"
+        />
+        @if (form.get('name')?.touched && form.get('name')?.invalid) {
+          <p class="text-xs text-red-500 mt-1">Group name is required (min 3 chars)</p>
+        }
+      </div>
+
+      <!-- Group Description -->
+      <div>
+        <input
+          formControlName="description"
+          placeholder="Group description..."
+          class="w-full border-b border-gray-300 px-2 py-2 focus:outline-none focus:border-primary-500 placeholder:text-gray-500"
+        />
+        @if (form.get('description')?.touched && form.get('description')?.invalid) {
+          <p class="text-xs text-red-500 mt-1">Description is required (min 3 chars)</p>
+        }
+      </div>
+    </form>
+
+    <!-- Search -->
+    <div
+      class="flex border-2 items-center gap-3 px-4 py-3 rounded-full bg-gray-100 mt-6 mb-5"
+      [class.border-primary-500]="searchInputFocused()"
+      [class.border-white]="!searchInputFocused()"
+    >
+      <i class="fa-brands fa-sistrix"></i>
+      <input
+        class="text-sm w-full focus:outline-none placeholder:text-gray-500"
+        placeholder="Search users..."
+        [value]="searchValue()"
+        (input)="onSearch($any($event.target).value)"
+        (focus)="onSearchInputFocus()"
+        (blur)="onSearchInputBlur()"
+      />
+    </div>
+
+    <!-- Results -->
+    <div class="h-[180px] overflow-y-auto mb-4">
+      @if (isLoading()) {
+        <div class="flex justify-center items-center h-full text-gray-500">Searching...</div>
+      } @else if (searchResults?.length) {
+        @for (user of searchResults; track user.userId) {
+          <div
+            class="flex items-center gap-3 hover:bg-gray-100 rounded-md p-3 cursor-pointer"
+            (click)="selectUser(user)"
+            [title]="`Add ${user?.fullName} to group`"
+          >
+            <app-avatar class="h-10 w-10" [url]="user.avatar || null" />
+            <div class="flex flex-col">
+              <span class="font-medium">{{ user.fullName }}</span>
+              <span class="text-sm text-gray-500">@{{ user.username }}</span>
+            </div>
+          </div>
+        }
+      } @else if (searchResults?.length === 0) {
+        <div class="flex justify-center items-center h-full text-gray-500">No results found</div>
+      } @else {
+        <div class="flex justify-center items-center h-full text-gray-500">
+          Search name or username
+        </div>
+      }
+    </div>
+
+    <!-- Create Button -->
+    <div class="flex justify-end">
+      <button
+        type="button"
+        title="Create group"
+        class="px-5 py-2 rounded-md text-white transition hover:bg-primary-600 cursor-pointer"
+        [class.bg-primary-500]="canCreate()"
+        [class.bg-gray-400]="!canCreate()"
+        [disabled]="!canCreate()"
+        (click)="createGroup()"
+      >
+        Create
+      </button>
+    </div>
+  </div>
+</div>

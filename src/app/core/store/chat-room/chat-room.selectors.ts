@@ -33,3 +33,8 @@ export const selectHasMoreChatRooms = createSelector(selectChatRoomState, (state
 //Get room by specific ID
 export const selectChatRoomById = (chatId: number) =>
   createSelector(selectAllChatRooms, (rooms) => rooms.find((r) => r.chatId === chatId) ?? null);
+
+export const selectChatRoomCreating = createSelector(
+  selectChatRoomState,
+  (state) => state.creating,
+);

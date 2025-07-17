@@ -17,7 +17,7 @@ export const loadMembersFailure = createAction(
 /** Add member */
 export const addMember = createAction(
   '[Chat Members] Add Member',
-  props<{ chatId: number; member: Partial<ChatRoomMember> }>(),
+  props<{ chatId: number; userId: string }>(), // don't be savage
 );
 
 export const addMemberSuccess = createAction(

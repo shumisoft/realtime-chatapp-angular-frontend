@@ -8,12 +8,23 @@
       [group]="vm.group"
       [isGroupAdmin]="vm.isGroupAdmin"
       [principalUserId]="vm.principalUserId"
+      (addMember)="onAddMember()"
       (updateGroup)="onUpdateGroup($event)"
       (removeMember)="onRemoveMember($event)"
+      (deleteGroup)="onDeleteGroup($event)"
     />
   } @else {
     <div class="min-h-screen flex items-center justify-center text-gray-500 text-sm">
       Chat room not found!
     </div>
   }
+}
+
+@if (isAddMemberModalOpen && (viewModel$ | async); as vm) {
+  <app-add-member-modal
+    [existingMemberIds]="vm.existingMemberIds"
+    [principalUserId]="vm.principalUserId"
+    (close)="closeAddMemberModal()"
+    (selectUser)="onUserSelected($event)"
+  />
 }

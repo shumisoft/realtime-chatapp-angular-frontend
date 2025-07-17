@@ -114,7 +114,6 @@ export class AuthEffects {
       this.actions.pipe(
         ofType(logout),
         tap(() => {
-          console.log('logout emitted!');
           localStorage.clear();
           this.toast.success('Logged out successfully!');
           this.router.navigateByUrl('/auth/login');

@@ -1,18 +1,19 @@
-import { EditUserRequest } from './../../../../core/models/user.models';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { HotToastService } from '@ngxpert/hot-toast';
-import { map, Observable } from 'rxjs';
-import { User, UserState } from '../../../../core/models/user.models';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { map, Observable } from 'rxjs';
+import { User } from '../../../../core/models/user.models';
 import { updatePrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import { EditUserRequest } from './../../../../core/models/user.models';
 
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AvatarComponent],
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.css'],
 })

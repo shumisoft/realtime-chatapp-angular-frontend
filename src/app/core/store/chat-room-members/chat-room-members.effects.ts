@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { catchError, map, mergeMap, of } from 'rxjs';
+import { catchError, mergeMap, of } from 'rxjs';
 import { ChatMembersService } from '../../services/chat-members/chat-members.service';
+import { loadChatRoomById } from '../chat-room/chat-room.actions';
 import { upsertUser } from '../users/users.actions';
 import {
   addMember,
@@ -13,7 +14,6 @@ import {
   removeMember,
   removeMemberSuccess,
 } from './chat-room-members.actions';
-import { loadChatRoomById } from '../chat-room/chat-room.actions';
 
 @Injectable()
 export class ChatMembersEffects {
@@ -47,12 +47,24 @@ export class ChatMembersEffects {
   addMember$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addMember),
-      mergeMap(({ chatId, member }) =>
-        this.service.addMember(chatId, member).pipe(
-          map(() => addMemberSuccess({ chatId })),
-          catchError((error) => of(loadMembersFailure({ chatId, error }))),
-        ),
-      ),
+      mergeMap(({ chatId, userId }) => {
+        this.toast.loading('Adding member...', { id: 'add-member' });
+
+        return this.service.addMember(chatId, { userId }).pipe(
+          mergeMap(() => {
+            this.toast.close('add-member');
+            this.toast.success('Member added!');
+
+            return [addMemberSuccess({ chatId }), loadChatRoomById({ chatId })];
+          }),
+          catchError((error) => {
+            this.toast.close('add-member');
+            this.toast.error(error?.error?.message || 'Failed to add member');
+
+            return of(loadMembersFailure({ chatId, error }));
+          }),
+        );
+      }),
     ),
   );
 
@@ -64,7 +76,7 @@ export class ChatMembersEffects {
         this.service.removeMember(chatId, userId).pipe(
           mergeMap(() => {
             // map(() => removeMemberSuccess({ chatId, userId })),
-            this.toast.success('Member removed'); // ← NEW
+            this.toast.success('Member removed!'); // ← NEW
             return [
               removeMemberSuccess({ chatId, userId }),
               loadChatRoomById({ chatId }), // ← Refetch room to get updated members

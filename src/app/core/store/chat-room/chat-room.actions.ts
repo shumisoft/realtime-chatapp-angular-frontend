@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ChatRoom, PaginatedChatRooms } from '../../models/message.model';
+import { ChatRoom, CreateChatRoomRequest, PaginatedChatRooms } from '../../models/message.model';
 
 // Load paginated user chat rooms (lazy scroll)
 export const loadMyChatRooms = createAction(
@@ -36,7 +36,7 @@ export const loadChatRoomByIdFailure = createAction(
 // Create
 export const createChatRoom = createAction(
   '[ChatRoom] Create ChatRoom',
-  props<{ payload: Partial<ChatRoom> }>(),
+  props<{ payload: CreateChatRoomRequest }>(),
 );
 
 export const createChatRoomSuccess = createAction(

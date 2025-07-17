@@ -3,5 +3,64 @@
   <a routerLink="/me" class="text-lg truncate hover:text-gray-600">
     {{ (principleUser$ | async)?.fullName }}</a
   >
-  <i class="fa-regular fa-square-plus ml-auto text-gray-800 hover:text-green-600 text-2xl"></i>
+  <div class="ml-auto text-gray-500 flex items-center justify-center gap-2">
+    <!-- New Chat: PLUS BUTTON -->
+    <!-- PLUS MENU -->
+    <div class="relative">
+      <div title="New chat" class="cursor-pointer" (click)="openPlusMenu($event)">
+        <i class="fa-regular fa-square-plus hover:text-green-600 text-2xl"></i>
+      </div>
+
+      @if (isPlusMenuOpen) {
+        <div
+          class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1.5 text-black"
+        >
+          <button
+            title="Start new chat"
+            class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
+            (click)="openNewChatModal()"
+          >
+            <i class="fa-solid fa-message"></i>
+            New chat
+          </button>
+
+          <button
+            title="Create new group"
+            class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
+            (click)="openNewGroupModal()"
+          >
+            <i class="fa-solid fa-users"></i>
+            New group
+          </button>
+        </div>
+      }
+    </div>
+    <!-- Three-dot menu -->
+    <div class="relative cursor-pointer" (click)="openMenu(); $event.stopPropagation()">
+      <i title="Menu" class="fa-solid fa-ellipsis-vertical hover:text-green-600 text-xl"></i>
+
+      @if (isMenuOpen) {
+        <div
+          class="absolute text-base right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1.5 text-black"
+        >
+          <button
+            class="flex justify-start items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-red-50 rounded-md cursor-pointer text-red-600"
+            (click)="onLogout()"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
 </div>
+
+<!-- Modal -->
+@if (isNewChatModalOpen) {
+  <app-new-chat (close)="closeNewChatModal()" (selectUser)="onCreateDirectMessage($event)" />
+}
+
+@if (isNewGroupModalOpen) {
+  <app-new-group (close)="closeNewGroupModal()" (create)="onCreateGroup($event)" />
+}

@@ -8,7 +8,7 @@ import { ChatRoomMember } from '../../models/message.model';
 })
 export class ChatMembersService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `http://localhost:5421/rooms`;
+  private readonly baseUrl = `http://localhost:5421/chat/rooms`;
 
   getMembers(chatId: number): Observable<ChatRoomMember[]> {
     return this.http.get<ChatRoomMember[]>(`${this.baseUrl}/${chatId}/members`);

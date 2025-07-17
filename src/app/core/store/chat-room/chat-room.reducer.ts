@@ -2,16 +2,18 @@ import { createReducer, on } from '@ngrx/store';
 import { ChatRoom } from '../../models/message.model';
 import {
   clearChatRooms,
+  createChatRoom,
+  createChatRoomFailure,
   createChatRoomSuccess,
   deleteChatRoomSuccess,
+  loadChatRoomById,
+  loadChatRoomByIdFailure,
+  loadChatRoomByIdSuccess,
   loadMyChatRooms,
   loadMyChatRoomsFailure,
   loadMyChatRoomsSuccess,
   selectChatRoom,
   updateChatRoomSuccess,
-  loadChatRoomById,
-  loadChatRoomByIdSuccess,
-  loadChatRoomByIdFailure,
 } from './chat-room.actions';
 
 export interface ChatRoomState {
@@ -23,6 +25,8 @@ export interface ChatRoomState {
 
   page: number;
   hasMore: boolean;
+
+  creating: boolean;
 }
 
 export const initialState: ChatRoomState = {
@@ -34,6 +38,8 @@ export const initialState: ChatRoomState = {
 
   page: 0,
   hasMore: false,
+
+  creating: false,
 };
 
 export const chatRoomReducer = createReducer(
@@ -86,9 +92,21 @@ export const chatRoomReducer = createReducer(
   })),
 
   // Create Room
+  on(createChatRoom, (state) => ({
+    ...state,
+    creating: true,
+  })),
+
   on(createChatRoomSuccess, (state, { data }) => ({
     ...state,
+    creating: false,
     rooms: [data, ...state.rooms],
+  })),
+
+  on(createChatRoomFailure, (state, { error }) => ({
+    ...state,
+    creating: false,
+    error,
   })),
 
   // Update Room

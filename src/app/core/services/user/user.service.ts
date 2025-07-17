@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { PageResponse } from '../../models/page.models';
 import { EditUserRequest, User } from '../../models/user.models';
 
 @Injectable({
@@ -22,6 +23,20 @@ export class UserService {
     return this.http.get<User>(`${this.userGateway}/lookup`, {
       params: {
         username,
+      },
+    });
+  }
+
+  searchUsers(
+    query: string,
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PageResponse<Partial<User>>> {
+    return this.http.get<PageResponse<Partial<User>>>(`${this.userGateway}/search`, {
+      params: {
+        q: query,
+        page,
+        size,
       },
     });
   }
