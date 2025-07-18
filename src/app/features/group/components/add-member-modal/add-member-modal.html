@@ -14,55 +14,10 @@
     </div>
 
     <!-- Search -->
-    <div
-      class="flex border-2 items-center gap-3 px-4 py-3 rounded-full bg-gray-100 mb-6"
-      [class.border-primary-500]="searchInputFocused()"
-      [class.border-white]="!searchInputFocused()"
-    >
-      <i class="fa-brands fa-sistrix"></i>
-      <input
-        class="text-sm w-full focus:outline-none placeholder-gray-400"
-        placeholder="Search user to add..."
-        (input)="onSearch($any($event.target).value)"
-        (focus)="onSearchInputFocus()"
-        (blur)="onSearchInputBlur()"
-      />
-    </div>
-
-    <!-- Results -->
-    <div class="h-[220px] overflow-y-auto">
-      @if (isLoading()) {
-        <div class="flex justify-center items-center h-full text-gray-500">Searching...</div>
-      } @else if (searchResults?.length) {
-        @for (user of searchResults; track user.userId) {
-          <div
-            class="flex items-center gap-3 rounded-md p-3 transition"
-            [class.hover:bg-gray-100]="!isAlreadyMember(user)"
-            [class.cursor-pointer]="!isAlreadyMember(user)"
-            [class.opacity-50]="isAlreadyMember(user)"
-            [class.italic]="isAlreadyMember(user)"
-            (click)="onUserClick(user)"
-            [title]="
-              isAlreadyMember(user)
-                ? 'Already a member of this group'
-                : `Add ${user?.fullName} to group`
-            "
-          >
-            <app-avatar class="h-10 w-10" [url]="user.avatar || null" />
-
-            <div class="flex flex-col flex-1">
-              <span class="font-medium">{{ user.fullName }}</span>
-              <span class="text-sm text-gray-500">@{{ user.username }} </span>
-            </div>
-          </div>
-        }
-      } @else if (searchResults?.length === 0) {
-        <div class="flex justify-center items-center h-full text-gray-500">No users found</div>
-      } @else {
-        <div class="flex justify-center items-center h-full text-gray-500">
-          Search name or username
-        </div>
-      }
-    </div>
+    <app-user-search
+      placeholder="Search user to add..."
+      [disabledUserIds]="existingMemberIds"
+      (userSelected)="onUserClick($event)"
+    />
   </div>
 </div>

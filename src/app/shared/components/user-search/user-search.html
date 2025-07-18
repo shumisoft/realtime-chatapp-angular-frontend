@@ -1,0 +1,38 @@
+<!-- Search Input -->
+<div class="flex border-2 items-center gap-3 px-4 py-3 rounded-full bg-gray-100 mb-6">
+  <i class="fa-brands fa-sistrix"></i>
+  <input
+    class="text-sm w-full focus:outline-none placeholder-gray-400"
+    [placeholder]="placeholder"
+    (input)="onSearch($any($event.target).value)"
+  />
+</div>
+
+<!-- Results -->
+<div class="h-[220px] overflow-y-auto">
+  @if (isLoading()) {
+    <div class="flex justify-center items-center h-full text-gray-500">Searching...</div>
+  } @else if (searchResults?.length) {
+    @for (user of searchResults; track user.userId) {
+      <div
+        class="flex items-center gap-3 rounded-md p-3 transition"
+        [class.hover:bg-gray-100]="!isDisabled(user)"
+        [class.cursor-pointer]="!isDisabled(user)"
+        [class.opacity-50]="isDisabled(user)"
+        (click)="onUserClick(user)"
+      >
+        <app-avatar class="h-10 w-10" [url]="user.avatar || null" />
+        <div class="flex flex-col flex-1">
+          <span class="font-medium">{{ user.fullName }}</span>
+          <span class="text-sm text-gray-500">@{{ user.username }}</span>
+        </div>
+
+        @if (isDisabled(user)) {
+          <span class="text-xs text-gray-500">Already added</span>
+        }
+      </div>
+    }
+  } @else {
+    <div class="flex justify-center items-center h-full text-gray-500">Search name or username</div>
+  }
+</div>
