@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ENV_CONFIG } from '../../config/app.env.config';
 import { ChatRoomMember } from '../../models/message.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatMembersService {
+  private readonly env = inject(ENV_CONFIG);
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `http://localhost:5421/chat/rooms`;
+  private readonly baseUrl = `${this.env.gatewayUri}/chat/rooms`;
 
   getMembers(chatId: number): Observable<ChatRoomMember[]> {
     return this.http.get<ChatRoomMember[]>(`${this.baseUrl}/${chatId}/members`);

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ENV_CONFIG } from '../../config/app.env.config';
 import { PageResponse } from '../../models/page.models';
 import { EditUserRequest, User } from '../../models/user.models';
 
@@ -8,8 +9,9 @@ import { EditUserRequest, User } from '../../models/user.models';
   providedIn: 'root',
 })
 export class UserService {
+  private readonly env = inject(ENV_CONFIG);
   private readonly http = inject(HttpClient);
-  private readonly userGateway = 'http://localhost:5421/users';
+  private readonly userGateway = `${this.env.gatewayUri}/users`;
 
   getPrincipalUser(): Observable<User> {
     return this.http.get<User>(`${this.userGateway}/me`);

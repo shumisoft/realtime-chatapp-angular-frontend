@@ -1,15 +1,17 @@
-import { inject, Injectable } from '@angular/core';
-import { WebsocketService } from '../ws/websocket.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ENV_CONFIG } from '../../config/app.env.config';
 import { Message, PaginatedMessages } from '../../models/message.model';
+import { WebsocketService } from '../ws/websocket.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
+  private readonly env = inject(ENV_CONFIG);
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `http://localhost:5421/chat/`;
+  private readonly baseUrl = `${this.env.gatewayUri}/chat`;
 
   private readonly ws = inject(WebsocketService);
 

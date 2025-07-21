@@ -2,13 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ChatRoom, CreateChatRoomRequest, PaginatedChatRooms } from '../../models/message.model';
+import { ENV_CONFIG } from '../../config/app.env.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatRoomService {
+  private readonly env = inject(ENV_CONFIG);
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `http://localhost:5421/chat/`;
+  private readonly baseUrl = `${this.env.gatewayUri}/chat`;
 
   create(body: CreateChatRoomRequest): Observable<ChatRoom> {
     return this.http.post<ChatRoom>(`${this.baseUrl}/rooms`, body);

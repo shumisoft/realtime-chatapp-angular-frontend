@@ -1,18 +1,21 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
 import { Observable, Subject } from 'rxjs';
 import SockJS from 'sockjs-client';
+import { ENV_CONFIG } from '../../config/app.env.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebsocketService {
+  private readonly env = inject(ENV_CONFIG);
+
   private client!: Client;
   private connected = false;
 
   private pendingSubscriptions: { topic: string; subject: Subject<any> }[] = [];
 
-  private readonly baseUrl = 'http://localhost:5421';
+  private readonly baseUrl = this.env.gatewayUri;
 
   constructor() {}
 
