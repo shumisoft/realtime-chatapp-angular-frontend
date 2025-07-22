@@ -10,7 +10,7 @@ import {
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
 import { User } from '../../../core/models/user.models';
 import { UserService } from '../../../core/services/user/user.service';
-import { AvatarComponent } from "../avatar/avatar.component";
+import { AvatarComponent } from '../avatar/avatar.component';
 
 @Component({
   selector: 'app-user-search',
@@ -30,6 +30,7 @@ export class UserSearch {
 
   searchResults: User[] | null = null;
   isLoading: WritableSignal<boolean> = signal(false);
+
   searchInputFocused: WritableSignal<boolean> = signal(false);
 
   constructor() {
@@ -65,5 +66,13 @@ export class UserSearch {
   onUserClick(user: User) {
     if (this.isDisabled(user)) return;
     this.userSelected.emit(user);
+  }
+
+  onSearchInputFocus() {
+    this.searchInputFocused.set(true);
+  }
+
+  onSearchInputBlur() {
+    this.searchInputFocused.set(false);
   }
 }

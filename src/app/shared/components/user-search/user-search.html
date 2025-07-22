@@ -1,10 +1,16 @@
 <!-- Search Input -->
-<div class="flex border-2 items-center gap-3 px-4 py-3 rounded-full bg-gray-100 mb-6">
+<div
+  class="flex border-2 items-center gap-3 px-4 py-3 rounded-full bg-gray-100 mb-6"
+  [class.border-primary-500]="searchInputFocused()"
+  [class.border-white]="!searchInputFocused()"
+>
   <i class="fa-brands fa-sistrix"></i>
   <input
     class="text-sm w-full focus:outline-none placeholder-gray-400"
     [placeholder]="placeholder"
     (input)="onSearch($any($event.target).value)"
+    (focus)="onSearchInputFocus()"
+    (blur)="onSearchInputBlur()"
   />
 </div>
 
