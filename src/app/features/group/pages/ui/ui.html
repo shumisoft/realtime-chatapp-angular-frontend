@@ -23,7 +23,6 @@
 @if (isAddMemberModalOpen && (viewModel$ | async); as vm) {
   <app-add-member-modal
     [existingMemberIds]="vm.existingMemberIds"
-    [principalUserId]="vm.principalUserId"
     (close)="closeAddMemberModal()"
     (selectUser)="onUserSelected($event)"
   />
