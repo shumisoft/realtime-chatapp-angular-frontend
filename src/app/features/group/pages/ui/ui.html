@@ -13,6 +13,11 @@
       (removeMember)="onRemoveMember($event)"
       (deleteGroup)="onDeleteGroup($event)"
     />
+  } @else if (vm.loadAttempted && !vm.loading) {
+    <!-- ← This will briefly show before redirect -->
+    <div class="min-h-screen flex items-center justify-center flex-col gap-4">
+      <div class="text-gray-500 text-sm">Redirecting to home...</div>
+    </div>
   } @else {
     <div class="min-h-screen flex items-center justify-center text-gray-500 text-sm">
       Chat room not found!

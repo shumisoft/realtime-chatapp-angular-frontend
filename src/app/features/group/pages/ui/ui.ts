@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { combineLatest, filter, map, switchMap, take, tap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, map, switchMap, take, tap } from 'rxjs';
 import { ChatRoom } from '../../../../core/models/message.model';
 import { User } from '../../../../core/models/user.models';
 import {
@@ -16,6 +16,7 @@ import {
 } from '../../../../core/store/chat-room/chat-room.actions';
 import {
   selectChatRoomById,
+  selectChatRoomLoadAttempted,
   selectChatRoomLoading,
 } from '../../../../core/store/chat-room/chat-room.selectors';
 import { getPrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
@@ -39,21 +40,32 @@ export class Ui implements OnInit {
 
   isAddMemberModalOpen = false;
 
+  ngOnInit(): void {
+    // Ensure principal user is loaded
+    this.principalUser$.pipe(take(1)).subscribe((user) => {
+      if (!user?.userId) {
+        this.store.dispatch(getPrincipalUser());
+      }
+    });
+  }
+
   readonly viewModel$ = this.route.paramMap.pipe(
     map((params) => Number(params.get('id'))),
+    distinctUntilChanged(),
     switchMap((chatId) =>
       combineLatest([
         this.store.select(selectChatRoomById(chatId)),
+        this.store.select(selectChatRoomLoadAttempted(chatId)),
         this.principalUser$,
         this.loading$,
       ]).pipe(
-        tap(([room, , loading]) => {
-          // Load only if not already in store and not currently loading
-          if (!room && !loading) {
+        tap(([room, loadAttempted, , loading]) => {
+          // Only load if: not in store, not loading, and haven't tried yet
+          if (!room && !loading && !loadAttempted) {
             this.store.dispatch(loadChatRoomById({ chatId }));
           }
         }),
-        map(([group, principalUser, loading]) => {
+        map(([group, loadAttempted, principalUser, loading]) => {
           const sortedGroup = group
             ? {
                 ...group,
@@ -64,6 +76,7 @@ export class Ui implements OnInit {
           return {
             group: sortedGroup,
             loading,
+            loadAttempted,
             principalUserId: principalUser?.userId ?? null,
             isGroupAdmin: !!sortedGroup?.members.find(
               (m) => m.userId === principalUser?.userId && m.admin,
@@ -74,14 +87,6 @@ export class Ui implements OnInit {
       ),
     ),
   );
-  ngOnInit(): void {
-    // Ensure principal user is loaded
-    this.principalUser$.pipe(take(1)).subscribe((user) => {
-      if (!user?.userId) {
-        this.store.dispatch(getPrincipalUser());
-      }
-    });
-  }
 
   onUpdateGroup(payload: Partial<Pick<ChatRoom, 'name' | 'description'>>) {
     // Get current chatId from route
@@ -92,12 +97,7 @@ export class Ui implements OnInit {
         filter((chatId) => !!chatId),
       )
       .subscribe((chatId) => {
-        this.store.dispatch(
-          updateChatRoom({
-            chatId,
-            payload,
-          }),
-        );
+        this.store.dispatch(updateChatRoom({ chatId, payload }));
       });
   }
 

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ChatRoomService } from '../../services/chat-room/chat-room.service';
 
 import {
@@ -25,9 +25,11 @@ import {
 
 import { ChatRoom } from '../../models/message.model';
 import { upsertUser } from '../users/users.actions';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ChatRoomEffects {
+  private readonly router = inject(Router);
   private readonly actions$ = inject(Actions);
   private readonly chatService = inject(ChatRoomService);
   private readonly toast = inject(HotToastService);
@@ -93,13 +95,18 @@ export class ChatRoomEffects {
               ...users.map((u) => upsertUser({ user: u })),
             ];
           }),
-          catchError((err) =>
-            of(
-              loadChatRoomByIdFailure({
-                error: err?.error?.message || 'Failed to load room',
-              }),
-            ),
-          ),
+          catchError((err) => {
+            const error = err?.error?.message || 'Failed to load room';
+            this.toast.error(error, { id: 'load-room' });
+
+            setTimeout(() => {
+              this.toast.close('load-room');
+
+              this.router.navigate(['/']);
+            }, 1500);
+
+            return of(loadChatRoomByIdFailure({ error }));
+          }),
         ),
       ),
     ),
@@ -177,12 +184,13 @@ export class ChatRoomEffects {
         this.toast.loading('Deleting chat room...', { id: 'delete-room' });
 
         return this.chatService.delete(chatId).pipe(
-          map(() => {
+          tap(() => {
+            // ← REDIRECT AFTER DELETE
             this.toast.close('delete-room');
             this.toast.success('Chat room deleted');
-
-            return deleteChatRoomSuccess({ chatId });
+            this.router.navigate(['/']);
           }),
+          map(() => deleteChatRoomSuccess({ chatId })),
           catchError((err) => {
             this.toast.close('delete-room');
 
