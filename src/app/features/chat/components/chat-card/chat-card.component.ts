@@ -1,8 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ChatRoomType, Message } from '../../../../core/models/message.model';
-import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
+import {
+  ChatRoom,
+  ChatRoomType,
+  Message,
+  MessageStatus,
+} from '../../../../core/models/message.model';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { selectUserById, selectUserColor } from '../../../../core/store/users/users.selectors';
 
@@ -13,12 +26,17 @@ import { selectUserById, selectUserColor } from '../../../../core/store/users/us
   templateUrl: './chat-card.component.html',
   styleUrl: './chat-card.component.css',
 })
-export class ChatCardComponent {
+export class ChatCardComponent implements AfterViewInit, OnDestroy {
   @Input() message!: Message;
+  @Input() selectedChatRoom!: ChatRoom | null;
+
+  @Output() onRead = new EventEmitter<boolean>();
+
+  private el = inject(ElementRef);
+  private observer!: IntersectionObserver;
 
   private readonly store = inject(Store);
   readonly principalUser$ = this.store.select(selectPrincipleUser);
-  readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   readonly userCache$ = this.store.select(selectUserById);
 
   formattedTime(timestamp: string): string {
@@ -34,7 +52,21 @@ export class ChatCardComponent {
     return this.store.select(selectUserColor(userId));
   }
 
-  isDirectMessageRoom(type: ChatRoomType | undefined): boolean {
-    return type === ChatRoomType.DIRECT_MESSAGE;
+  isDirectMessageRoom(): boolean {
+    return this.selectedChatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
+  }
+
+  ngAfterViewInit() {
+    if (this.isDirectMessageRoom() && this.message.status !== MessageStatus.READ) {
+      this.observer = new IntersectionObserver(() => {
+        this.onRead.emit(true);
+      });
+
+      this.observer.observe(this.el.nativeElement);
+    }
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
   }
 }

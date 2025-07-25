@@ -6,14 +6,26 @@ export enum ChatRoomType {
   DIRECT_MESSAGE = 'DIRECT_MESSAGE',
 }
 
+export enum MessageType {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  FILE = 'FILE',
+}
+
+export enum MessageStatus {
+  READ = 'READ',
+  UNREAD = 'UNREAD',
+  DELIVERED = 'DELIVERED',
+}
+
 export interface Message {
   messageId: string;
   chatRoomId: number;
   userId: string;
   content: string;
   timestamp: string; // Timestamp as ISO string
-  status: string;
-  type: string;
+  status: MessageStatus;
+  type: MessageType;
   edited: boolean;
 }
 
@@ -57,4 +69,10 @@ export interface PaginatedMessages {
   size: number;
   number: number;
   last: boolean;
+}
+
+export interface TypingEventDTO {
+  chatId: number;
+  userId: string;
+  typing: boolean;
 }

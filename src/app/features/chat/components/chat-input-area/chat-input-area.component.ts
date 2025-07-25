@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -6,7 +6,8 @@ import { Store } from '@ngrx/store';
 import { createMessage } from '../../../../core/store/message/message.actions';
 import { ChatRoom, Message } from '../../../../core/models/message.model';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
-import { switchMap, tap } from 'rxjs';
+import { Subject, switchMap, tap, throttleTime } from 'rxjs';
+import { User, UserState } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-chat-input-area',
@@ -15,6 +16,8 @@ import { switchMap, tap } from 'rxjs';
   imports: [CommonModule, FormsModule],
 })
 export class ChatInputAreaComponent implements OnInit {
+  @Input() principalUser!: UserState | null;
+
   private readonly store = inject(Store);
   private readonly messageService = inject(MessageService);
 
@@ -22,7 +25,23 @@ export class ChatInputAreaComponent implements OnInit {
   selectedchatroom!: ChatRoom;
   message = '';
 
-  constructor() {}
+  private typingSubject = new Subject<string>();
+
+  constructor() {
+    this.typingSubject.pipe(throttleTime(2000)).subscribe((typing) => {
+      console.log('typing...');
+      if (this.principalUser?.userId)
+        this.messageService.sendTypingEvent({
+          chatId: +this.selectedchatroom.chatId,
+          userId: this.principalUser?.userId,
+          typing: true,
+        });
+    });
+  }
+
+  onTyping(value: string) {
+    this.typingSubject.next(value);
+  }
 
   ngOnInit() {
     this.selectedChatRoom$

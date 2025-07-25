@@ -7,6 +7,7 @@ import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-ro
 import { ChatAreaComponent } from '../chat-area/chat-area.component';
 import { ChatInputAreaComponent } from '../chat-input-area/chat-input-area.component';
 import { ChatMenuComponent } from '../chat-menu/chat-menu.component';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 
 @Component({
   selector: 'app-main',
@@ -18,6 +19,7 @@ export class MainComponent implements OnInit {
   private readonly store = inject(Store);
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
+  readonly principalUser$ = this.store.select(selectPrincipleUser);
 
   constructor() {}
 

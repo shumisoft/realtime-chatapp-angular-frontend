@@ -56,8 +56,10 @@ export class SidebarComponent implements OnInit {
             for (let room of rooms) {
               this.messageService.listenToChat(room.chatId).subscribe((msg) => {
                 this.store.dispatch(incomingWsMessage({ message: msg }));
-                this.store.dispatch(updateChatRoomLatestMessage({ message: msg }));
                 this.sendData(msg);
+              });
+              this.messageService.listenToTyping(room.chatId).subscribe((typingDTO) => {
+                console.log('listened to:', typingDTO);
               });
             }
           }

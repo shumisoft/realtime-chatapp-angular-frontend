@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import * as MessageActions from './message.actions';
-import { Message } from '../../models/message.model';
+import { Message, MessageStatus } from '../../models/message.model';
 
 export interface ChatMessageMeta {
   page: number; // Next page to request
@@ -93,12 +93,12 @@ export const messageReducer = createReducer(
   //
   // STATUS UPDATE
   //
-  on(MessageActions.updateMessageStatusSuccess, (state, { messageId }) => {
+  on(MessageActions.updateMessageSuccess, (state, { message }) => {
     const updated: Record<number, Message[]> = {};
 
     for (const chatId in state.messages) {
       updated[+chatId] = state.messages[chatId].map((m) =>
-        m.messageId === messageId ? { ...m, status: 'DELIVERED' } : m,
+        m.messageId === message.messageId ? { ...m, status: message.status } : m,
       );
     }
 

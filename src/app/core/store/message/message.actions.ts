@@ -66,17 +66,17 @@ export const incomingWsMessage = createAction(
 //
 // UPDATE STATUS
 //
-export const updateMessageStatus = createAction(
-  '[Messages] Update Message Status',
-  props<{ messageId: string }>(),
+export const updateMessage = createAction(
+  '[Messages] Update Message',
+  props<{ message: Message }>(),
 );
 
-export const updateMessageStatusSuccess = createAction(
-  '[Messages] Update Message Status Success',
-  props<{ messageId: string }>(),
+export const updateMessageSuccess = createAction(
+  '[Messages] Update Message Success',
+  props<{ message: Message }>(),
 );
 
-export const updateMessageStatusFailure = createAction(
-  '[Messages] Update Message Status Failure',
+export const updateMessageFailure = createAction(
+  '[Messages] Update Message Failure',
   props<{ error: any }>(),
 );

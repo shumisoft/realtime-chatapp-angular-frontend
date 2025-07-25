@@ -2,11 +2,15 @@
   <!-- Observe this to detect scroll reaching top-->
   <div #topSentinel></div>
   @if ((loading$ | async) || (hasMore$ | async)) {
-    <div class="bg-transparent mx-auto p-4 pb-8 flex flex-col items-center">
+    <div () class="bg-transparent mx-auto p-4 pb-8 flex flex-col items-center">
       <img src="/ring-resize.svg" alt="" />
     </div>
   }
   @for (message of messages$ | async; track message.messageId) {
-    <app-chat-card [message]="message" />
+    <app-chat-card
+      [message]="message"
+      (onRead)="markRead(message)"
+      [selectedChatRoom]="selectedChatRoom$ | async"
+    />
   }
 </div>

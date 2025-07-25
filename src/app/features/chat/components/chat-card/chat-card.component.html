@@ -4,16 +4,20 @@
 >
   <p
     class="text-[.65rem] font-bold mb-1 mr-8"
-    [class.hidden]="
-      message.userId === (principalUser$ | async)?.userId ||
-      isDirectMessageRoom((selectedChatRoom$ | async)?.type)
-    "
+    [class.hidden]="message.userId === (principalUser$ | async)?.userId || isDirectMessageRoom()"
     [style.color]="selectUserColorById$(message.userId) | async"
   >
     {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
   <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
-  <div class="flex">
-    <p class="ml-auto text-[.55rem]">{{ formattedTime(message.timestamp) }}</p>
+  <div class="flex text-[.55rem] gap-2">
+    <p class="ml-auto">
+      {{ formattedTime(message.timestamp) }}
+      @if (isDirectMessageRoom()) {
+        <span class="material-symbols-outlined"> check </span>
+        <span class="material-symbols-outlined"> schedule </span>
+        <span class="material-symbols-outlined"> done_all </span>
+      }
+    </p>
   </div>
 </div>

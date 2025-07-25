@@ -2,7 +2,7 @@
   @if (selectedChatRoom$ | async) {
     <app-chat-menu />
     <app-chat-area class="flex-1 overflow-y-auto bg-gray-200 bg-[url(/chat_bg.png)]" />
-    <app-chat-input-area />
+    <app-chat-input-area [principalUser]="principalUser$ | async" />
   } @else {
     <div class="flex justify-center items-center w-full h-full text-gray-600">
       Please select a chatroom.

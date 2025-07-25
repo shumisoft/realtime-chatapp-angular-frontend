@@ -5,6 +5,7 @@ import { catchError, map, mergeMap, withLatestFrom, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { MessageService } from '../../services/message/message.service';
 import { selectChatMeta } from './message.selectors';
+import { MessageStatus } from '../../models/message.model';
 
 @Injectable()
 export class MessageEffects {
@@ -82,13 +83,13 @@ export class MessageEffects {
   //
   updateStatus$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(MessageActions.updateMessageStatus),
-      mergeMap(({ messageId }) =>
-        this.service.updateStatus(messageId).pipe(
-          map(() => MessageActions.updateMessageStatusSuccess({ messageId })),
-          catchError((err) => of(MessageActions.updateMessageStatusFailure({ error: err }))),
-        ),
-      ),
+      ofType(MessageActions.updateMessage),
+      mergeMap(({ message }) => {
+        return this.service.updateMessage(message).pipe(
+          map((message) => MessageActions.updateMessageSuccess({ message })),
+          catchError((err) => of(MessageActions.updateMessageFailure({ error: err }))),
+        );
+      }),
     ),
   );
 }

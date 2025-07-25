@@ -4,6 +4,7 @@
     (keyup.enter)="onSend()"
     placeholder="Type a message..."
     class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    (input)="onTyping($any($event.target).value)"
   ></textarea>
 
   <i class="fa-solid fa-paperclip text-xl text-gray-800 hover:text-gray-600"></i>

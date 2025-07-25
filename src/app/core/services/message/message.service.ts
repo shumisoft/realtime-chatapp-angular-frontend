@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ENV_CONFIG } from '../../config/app.env.config';
-import { Message, PaginatedMessages } from '../../models/message.model';
+import { Message, PaginatedMessages, TypingEventDTO } from '../../models/message.model';
 import { WebsocketService } from '../ws/websocket.service';
 
 @Injectable({
@@ -27,8 +27,23 @@ export class MessageService {
     return this.ws.subscribe(`/topic/rooms/${chatId}`);
   }
 
+  listenToTyping(chatId: number): Observable<TypingEventDTO> {
+    return this.ws.subscribe(`/topic/rooms/${chatId}/typing`);
+  }
+
   sendMessage(dto: Partial<Message>): void {
     this.ws.publish('/app/chat.sendMessage', dto);
+  }
+
+  updateMessage(dto: Message): Observable<Message> {
+    this.sendMessage(dto);
+    return of(dto);
+  }
+
+  sendTypingEvent(dto: TypingEventDTO) {
+    console.log("typing service: ", dto);
+    
+    this.ws.publish('/app/chat.typing', dto);
   }
 
   // --------------------------

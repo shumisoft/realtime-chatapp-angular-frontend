@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { distinctUntilChanged, map, Observable, take, tap } from 'rxjs';
-import { Message } from '../../../../core/models/message.model';
+import { Message, MessageStatus } from '../../../../core/models/message.model';
 import { MessageEventCommunicator } from '../../../../core/services/message-event-communicator/message-event-communicator';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import {
   loadInitialMessages,
   loadOlderMessages,
+  updateMessage,
 } from '../../../../core/store/message/message.actions';
 import {
   selectChatHasMore,
@@ -219,5 +220,15 @@ export class ChatAreaComponent implements OnInit, AfterViewInit {
 
   handleIncomingWSMessage() {
     this.scrollState = ScrollState.WS_BOTTOM;
+  }
+
+  markRead(message: Message) {
+    this.messages$.pipe(take(1)).subscribe((messages) => {
+      for (const msg of messages) {
+        if (msg.status !== MessageStatus.READ && msg.timestamp <= message.timestamp) {
+          this.store.dispatch(updateMessage({ message: { ...msg, status: MessageStatus.READ } }));
+        }
+      }
+    });
   }
 }
