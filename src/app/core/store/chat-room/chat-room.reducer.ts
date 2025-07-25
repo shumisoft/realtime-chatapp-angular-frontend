@@ -13,6 +13,7 @@ import {
   loadMyChatRoomsFailure,
   loadMyChatRoomsSuccess,
   selectChatRoom,
+  updateChatRoomLatestMessage,
   updateChatRoomSuccess,
 } from './chat-room.actions';
 
@@ -118,6 +119,13 @@ export const chatRoomReducer = createReducer(
   on(updateChatRoomSuccess, (state, { data }) => ({
     ...state,
     rooms: state.rooms.map((r) => (r.chatId === data.chatId ? data : r)),
+  })),
+
+  on(updateChatRoomLatestMessage, (state, { message }) => ({
+    ...state,
+    rooms: state.rooms.map((room) =>
+      room.chatId === message.chatRoomId ? { ...room, latestMessage: message } : room,
+    ),
   })),
 
   // Delete Room

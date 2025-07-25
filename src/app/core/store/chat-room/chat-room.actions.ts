@@ -1,6 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ChatRoom, CreateChatRoomRequest, PaginatedChatRooms } from '../../models/message.model';
-
+import { ChatRoom, CreateChatRoomRequest, Message, PaginatedChatRooms } from '../../models/message.model';
 // Load paginated user chat rooms (lazy scroll)
 export const loadMyChatRooms = createAction(
   '[ChatRoom] Load My ChatRooms',
@@ -63,6 +62,11 @@ export const updateChatRoomSuccess = createAction(
 export const updateChatRoomFailure = createAction(
   '[ChatRoom] Update ChatRoom Failure',
   props<{ error: string }>(),
+);
+
+export const updateChatRoomLatestMessage = createAction(
+  '[ChatRoom] Update ChatRoom Latest Message',
+  props<{ message: Message }>(),
 );
 
 // Delete

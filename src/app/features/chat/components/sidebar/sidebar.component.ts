@@ -6,7 +6,10 @@ import { Message } from '../../../../core/models/message.model';
 import { MessageEventCommunicator } from '../../../../core/services/message-event-communicator/message-event-communicator';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { logout } from '../../../../core/store/auth/auth.actions';
-import { loadMyChatRooms } from '../../../../core/store/chat-room/chat-room.actions';
+import {
+  loadMyChatRooms,
+  updateChatRoomLatestMessage,
+} from '../../../../core/store/chat-room/chat-room.actions';
 import {
   selectChatRoomLoading,
   selectChatRoomsSorted,
@@ -53,7 +56,7 @@ export class SidebarComponent implements OnInit {
             for (let room of rooms) {
               this.messageService.listenToChat(room.chatId).subscribe((msg) => {
                 this.store.dispatch(incomingWsMessage({ message: msg }));
-
+                this.store.dispatch(updateChatRoomLatestMessage({ message: msg }));
                 this.sendData(msg);
               });
             }

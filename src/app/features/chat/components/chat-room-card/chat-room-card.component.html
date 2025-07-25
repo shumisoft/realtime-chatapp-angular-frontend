@@ -5,8 +5,15 @@
   [class.cursor-pointer]="(selectedChatRoom$ | async)?.chatId !== chatroom.chatId"
 >
   <app-avatar class="h-12 w-12 flex items-center justify-center" />
-  <div class="ml-2 flex flex-col items-start justify-center">
-    <h2 class="text-xl font-medium">{{ roomName(chatroom, principalUser$ | async) }}</h2>
-    <p class="text-sm text-gray-500 line-clamp-1">{{ chatroom.latestMessage?.content }}</p>
+  <div class="ml-2 flex flex-col items-start justify-center w-full gap-0.5">
+    <h2 class="text-xl font-medium flex justify-between items-center w-full">
+      <span>{{ roomName(chatroom, principalUser$ | async) }}</span>
+      @if (chatroom.latestMessage?.timestamp != null) {
+        <p class="text-[.55rem] text-gray-500">
+          {{ chatroom.latestMessage!.timestamp | date: 'h:mm a' }}
+        </p>
+      }
+    </h2>
+    <p class="ml-0.5 text-sm text-gray-500 line-clamp-1">{{ chatroom.latestMessage?.content }}</p>
   </div>
 </div>
