@@ -1,13 +1,12 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { MessageService } from '../../../../core/services/message/message.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { createMessage } from '../../../../core/store/message/message.actions';
-import { ChatRoom, Message } from '../../../../core/models/message.model';
+import { debounceTime, Subject, takeUntil, tap } from 'rxjs';
+import { ChatRoom, TypingEventDTO } from '../../../../core/models/message.model';
+import { UserState } from '../../../../core/models/user.models';
+import { MessageService } from '../../../../core/services/message/message.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
-import { Subject, switchMap, tap, throttleTime } from 'rxjs';
-import { User, UserState } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-chat-input-area',
@@ -15,42 +14,44 @@ import { User, UserState } from '../../../../core/models/user.models';
   styleUrls: ['./chat-input-area.component.css'],
   imports: [CommonModule, FormsModule],
 })
-export class ChatInputAreaComponent implements OnInit {
+export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Input() principalUser!: UserState | null;
 
   private readonly store = inject(Store);
   private readonly messageService = inject(MessageService);
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
+
   selectedchatroom!: ChatRoom;
   message = '';
 
-  private typingSubject = new Subject<string>();
+  private readonly TYPING_IDLE_MS = 2000;
 
-  constructor() {
-    this.typingSubject.pipe(throttleTime(2000)).subscribe((typing) => {
-      console.log('typing...');
-      if (this.principalUser?.userId)
-        this.messageService.sendTypingEvent({
-          chatId: +this.selectedchatroom.chatId,
-          userId: this.principalUser?.userId,
-          typing: true,
-        });
-    });
-  }
+  private typingActivity$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
-  onTyping(value: string) {
-    this.typingSubject.next(value);
-  }
-
+  private isTyping = false;
+  
   ngOnInit() {
+    // When chat changes → reset typing
     this.selectedChatRoom$
       .pipe(
         tap((chatroom) => {
-          if (chatroom) this.selectedchatroom = chatroom;
+          if (chatroom) {
+            this.selectedchatroom = chatroom;
+            this.stopTyping();
+          }
         }),
+        takeUntil(this.destroy$),
       )
       .subscribe();
+
+    // Idle detection
+    this.typingActivity$
+      .pipe(debounceTime(this.TYPING_IDLE_MS), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.stopTyping();
+      });
   }
 
   onSend(): void {
@@ -69,6 +70,56 @@ export class ChatInputAreaComponent implements OnInit {
       content: trimmedContent,
     });
 
+    // IMPORTANT → stop typing when sending
+    this.stopTyping();
     this.message = '';
+  }
+
+  onTyping(value: string) {
+    if (!this.selectedchatroom) return;
+    if (!this.principalUser?.userId) return;
+
+    console.log('typing hit...');
+
+    // Empty input → stop typing immediately
+    if (!value.trim()) {
+      console.log('[emty value after trim]...');
+      this.stopTyping();
+      return;
+    }
+
+    // First keystroke
+    if (!this.isTyping) {
+      this.sendTypingEvent(true);
+      this.isTyping = true;
+    }
+
+    // Emit activity signal (resets debounce timer)
+    this.typingActivity$.next();
+  }
+
+  private sendTypingEvent(typing: boolean) {
+    if (!this.principalUser?.userId || !this.selectedchatroom) return;
+
+    const dto: TypingEventDTO = {
+      chatId: this.selectedchatroom.chatId,
+      userId: this.principalUser.userId,
+      typing,
+    };
+
+    this.messageService.sendTypingEvent(dto);
+  }
+
+  private stopTyping() {
+    if (!this.isTyping) return;
+
+    this.sendTypingEvent(false);
+    this.isTyping = false;
+  }
+
+  ngOnDestroy() {
+    this.stopTyping();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

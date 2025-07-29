@@ -7,6 +7,8 @@ import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-ro
 import { CommonModule } from '@angular/common';
 import { UserState } from '../../../../core/models/user.models';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
+import { combineLatest, map, Observable } from 'rxjs';
+import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
 
 @Component({
   selector: 'app-chat-room-card',
@@ -22,7 +24,30 @@ export class ChatRoomCardComponent implements OnInit {
   @Input() chatroom!: ChatRoom;
   constructor() {}
 
-  ngOnInit() {}
+  showTyping$!: Observable<string | null>;
+  
+  ngOnInit() {
+    combineLatest([this.principalUser$, this.selectedChatRoom$]).subscribe(
+      ([principal, selectedRoom]) => {
+        if (!principal?.userId) return;
+
+        const typing$ = this.store.select(
+          selectTypingDisplayText(this.chatroom.chatId, principal.userId),
+        );
+
+        this.showTyping$ = combineLatest([typing$]).pipe(
+          map(([typing]) => {
+            if (!typing) return null;
+
+            // hide typing if this room is selected
+            if (selectedRoom?.chatId === this.chatroom.chatId) return null;
+
+            return typing;
+          }),
+        );
+      },
+    );
+  }
 
   openChat() {
     this.store.dispatch(selectChatRoom({ chatId: this.chatroom.chatId }));

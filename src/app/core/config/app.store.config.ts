@@ -6,6 +6,7 @@ import { chatRoomReducer } from '../store/chat-room/chat-room.reducer';
 import { messageReducer } from '../store/message/message.reducer';
 import { chatRoomMembersReducer } from '../store/chat-room-members/chat-room-members.reducer';
 import { usersReducer } from '../store/users/users.reducer';
+import { presenceReducer } from '../store/presence/presence.reducer';
 
 export const appStoreProviders = [
   provideStore(
@@ -16,6 +17,7 @@ export const appStoreProviders = [
       messages: messageReducer,
       chatRoomMembers: chatRoomMembersReducer,
       users: usersReducer,
+      presence: presenceReducer,
     },
     {
       initialState: {

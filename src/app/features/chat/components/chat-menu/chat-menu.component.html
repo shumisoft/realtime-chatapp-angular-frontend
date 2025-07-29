@@ -11,8 +11,12 @@
       <h2 class="text-lg leading-6 font-medium">
         {{ roomName(selectedChatRoom$ | async, principalUser$ | async) }}
       </h2>
-      <p class="text-xs text-gray-500">
-        {{ roomSubtitle(selectedChatRoom$ | async) }}
+      <p class="text-xs text-gray-500 typing-indicator">
+        @if (typingText$ | async; as typing) {
+          <span class="typing-dots">{{ typing }}</span>
+        } @else {
+          {{ roomSubtitle(selectedChatRoom$ | async) }}
+        }
       </p>
     </div>
   }

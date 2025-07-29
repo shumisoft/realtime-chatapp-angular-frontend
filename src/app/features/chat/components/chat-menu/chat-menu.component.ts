@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { tap } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { ChatRoom, ChatRoomType } from '../../../../core/models/message.model';
 import { UserState } from '../../../../core/models/user.models';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
+import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 
@@ -27,23 +28,19 @@ export class ChatMenuComponent implements OnInit {
 
   isDirectMessage!: boolean;
 
-  constructor() {
-    this.selectedChatRoom$
-      .pipe(
-        tap((chatroom) => {
-          this.isDirectMessage = chatroom?.type === ChatRoomType.DIRECT_MESSAGE;
-          this.currentChatRoom = chatroom;
-        }),
-      )
-      .subscribe();
+  typingText$!: Observable<string | null>;
 
-    this.principalUser$
-      .pipe(
-        tap((user) => {
-          this.currentPrincipalUser = user;
-        }),
-      )
-      .subscribe();
+  constructor() {
+    combineLatest([this.selectedChatRoom$, this.principalUser$]).subscribe(([room, user]) => {
+      if (!room || !user?.userId) return;
+
+      this.currentChatRoom = room;
+      this.isDirectMessage = room.type === ChatRoomType.DIRECT_MESSAGE;
+
+      this.currentPrincipalUser = user;
+
+      this.typingText$ = this.store.select(selectTypingDisplayText(room.chatId, user.userId));
+    });
   }
 
   ngOnInit() {}
