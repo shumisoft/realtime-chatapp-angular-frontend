@@ -9,11 +9,12 @@ import { User } from '../../../../core/models/user.models';
 import { updatePrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { EditUserRequest } from './../../../../core/models/user.models';
+import { Edit, Logout, Check } from '../../../../shared/components/icons';
 
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarComponent],
+  imports: [CommonModule, FormsModule, AvatarComponent, Edit, Logout, Check],
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.css'],
 })
@@ -55,7 +56,7 @@ export class ProfileCardComponent implements OnInit {
         updatePrincipalUser({ payload: { [field]: this.form[field] } as EditUserRequest }),
       );
 
-      console.log(`Updated ${field} to`, this.form[field]);
+      console.info(`Updated ${field} to`, this.form[field]);
     }
     this.editField[field] = false;
   }

@@ -7,8 +7,12 @@
     <!-- New Chat: PLUS BUTTON -->
     <!-- PLUS MENU -->
     <div class="relative">
-      <div title="New chat" class="cursor-pointer" (click)="openPlusMenu($event)">
-        <i class="fa-regular fa-square-plus hover:text-green-600 text-2xl"></i>
+      <div
+        title="New chat"
+        class="text-gray-500 hover:text-green-600 cursor-pointer"
+        (click)="openPlusMenu($event)"
+      >
+        <icon-add-comment size="22" />
       </div>
 
       @if (isPlusMenuOpen) {
@@ -20,7 +24,7 @@
             class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
             (click)="openNewChatModal()"
           >
-            <i class="fa-solid fa-message"></i>
+            <icon-chat-add-on />
             New chat
           </button>
 
@@ -29,15 +33,17 @@
             class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
             (click)="openNewGroupModal()"
           >
-            <i class="fa-solid fa-users"></i>
+            <icon-group-add size="22" />
             New group
           </button>
         </div>
       }
     </div>
     <!-- Three-dot menu -->
-    <div class="relative cursor-pointer" (click)="openMenu(); $event.stopPropagation()">
-      <i title="Menu" class="fa-solid fa-ellipsis-vertical hover:text-green-600 text-xl"></i>
+    <div title="Menu" class="relative" (click)="openMenu(); $event.stopPropagation()">
+      <div class="text-gray-500 hover:text-green-600 cursor-pointer">
+        <icon-more-vertical />
+      </div>
 
       @if (isMenuOpen) {
         <div
@@ -47,7 +53,7 @@
             class="flex justify-start items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-red-50 rounded-md cursor-pointer text-red-600"
             (click)="onLogout()"
           >
-            <i class="fa-solid fa-right-from-bracket"></i>
+            <icon-logout size="20" />
             Logout
           </button>
         </div>

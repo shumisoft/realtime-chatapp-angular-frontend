@@ -6,11 +6,9 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">Create New Group</h2>
-      <i
-        title="Close"
-        class="fa-solid fa-xmark cursor-pointer text-gray-500 hover:text-black"
-        (click)="onClose()"
-      ></i>
+      <div title="Close" class="cursor-pointer text-gray-500 hover:text-black">
+        <icon-close (click)="onClose()" />
+      </div>
     </div>
 
     <!-- Selected Users -->
@@ -30,11 +28,13 @@
             </span>
 
             <!-- Remove -->
-            <i
+            <div
               [title]="`Remove ${user?.fullName} from group`"
-              class="fa-solid fa-xmark text-xs cursor-pointer text-gray-500 hover:text-red-500"
+              class="text-xs cursor-pointer text-gray-500 hover:text-red-500"
               (click)="removeUser(user.userId)"
-            ></i>
+            >
+              <icon-close size="16" />
+            </div>
           </div>
         }
       </div>
@@ -73,7 +73,7 @@
       [class.border-primary-500]="searchInputFocused()"
       [class.border-white]="!searchInputFocused()"
     >
-      <i class="fa-brands fa-sistrix"></i>
+      <icon-search size="20" />
       <input
         class="text-sm w-full focus:outline-none placeholder:text-gray-500"
         placeholder="Search users..."

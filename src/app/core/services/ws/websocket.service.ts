@@ -28,7 +28,7 @@ export class WebsocketService {
         Authorization: `Bearer ${jwtToken}`,
       },
 
-      debug: (msg) => console.log('STOMP:', msg),
+      debug: (msg) => console.info('STOMP:', msg),
 
       onConnect: () => {
         this.connected = true;

@@ -13,11 +13,33 @@ import { RouterLink } from '@angular/router';
 import { ChatRoom, ChatRoomMember } from '../../../../core/models/message.model';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
+import {
+  Check,
+  Delete,
+  Edit,
+  MoreVertical,
+  PersonAdd,
+  PersonRemove,
+  PersonShield,
+} from '../../../../shared/components/icons';
 
 @Component({
   standalone: true,
   selector: 'app-group-card',
-  imports: [CommonModule, FormsModule, AvatarComponent, RouterLink, ConfirmationDialog],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AvatarComponent,
+    RouterLink,
+    ConfirmationDialog,
+    Check,
+    Delete,
+    Edit,
+    MoreVertical,
+    PersonAdd,
+    PersonRemove,
+    // PersonShield,
+  ],
   templateUrl: './group-card.html',
   styleUrl: './group-card.css',
 })
@@ -95,7 +117,7 @@ export class GroupCard implements OnChanges {
 
     this.updateGroup.emit({ [field]: newValue });
 
-    console.log(`Updated ${field} to`, this.form[field]);
+    console.info(`Updated ${field} to`, this.form[field]);
 
     this.editField[field] = false;
   }

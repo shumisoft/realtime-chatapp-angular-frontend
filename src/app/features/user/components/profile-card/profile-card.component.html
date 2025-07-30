@@ -19,11 +19,12 @@
               @if (isPrincipalUser && false) {
                 <div class="">
                   <button
+                    title="Edit"
                     type="button"
                     class="hidden group-hover:inline-flex items-center justify-center px-2 text-gray-400 hover:text-blue-500 transition-colors"
                     (click)="startEdit('username', user.username)"
                   >
-                    <i class="fa-solid fa-pen"></i>
+                    <icon-edit size="20" />
                   </button>
                 </div>
               }
@@ -35,11 +36,12 @@
                 class="w-min mt-1 border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 outline-none"
               />
               <button
+                title="Save"
                 type="button"
                 class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-500 transition-colors"
                 (click)="saveEdit('username', user.username)"
               >
-                <i class="fa-solid fa-check"></i>
+                <icon-check size="26" />
               </button>
             }
           </div>
@@ -56,11 +58,12 @@
               @if (isPrincipalUser) {
                 <div class="">
                   <button
+                    title="Edit"
                     type="button"
                     class="hidden group-hover:inline-flex items-center justify-center px-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                     (click)="startEdit('fullName', user.fullName)"
                   >
-                    <i class="fa-solid fa-pen"></i>
+                    <icon-edit size="20" />
                   </button>
                 </div>
               }
@@ -72,11 +75,12 @@
                 class="w-min mt-1 border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 outline-none"
               />
               <button
+                title="Save"
                 type="button"
                 class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                 (click)="saveEdit('fullName', user.fullName)"
               >
-                <i class="fa-solid fa-check"></i>
+                <icon-check size="26" />
               </button>
             }
           </div>
@@ -95,11 +99,12 @@
               @if (isPrincipalUser) {
                 <div class="">
                   <button
+                    title="Edit"
                     type="button"
                     class="hidden group-hover:inline-flex items-center justify-center px-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                     (click)="startEdit('bio', user.bio)"
                   >
-                    <i class="fa-solid fa-pen"></i>
+                    <icon-edit size="20" />
                   </button>
                 </div>
               }
@@ -111,11 +116,12 @@
                 class="w-min mt-1 border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 outline-none"
               />
               <button
+                title="Save"
                 type="button"
                 class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                 (click)="saveEdit('bio', user.bio)"
               >
-                <i class="fa-solid fa-check"></i>
+                <icon-check size="26" />
               </button>
             }
           </div>
@@ -132,11 +138,12 @@
               @if (isPrincipalUser) {
                 <div class="">
                   <button
+                    title="Edit"
                     type="button"
                     class="hidden group-hover:inline-flex items-center justify-center px-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                     (click)="startEdit('email', user.email)"
                   >
-                    <i class="fa-solid fa-pen"></i>
+                    <icon-edit size="20" />
                   </button>
                 </div>
               }
@@ -148,11 +155,12 @@
                 class="w-min mt-1 border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 outline-none"
               />
               <button
+                title="Save"
                 type="button"
                 class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer"
                 (click)="saveEdit('email', user.email)"
               >
-                <i class="fa-solid fa-check"></i>
+                <icon-check size="26" />
               </button>
             }
           </div>
@@ -165,12 +173,13 @@
   @if (isPrincipalUser) {
     <div class="mt-10 flex justify-center">
       <button
+        title="Logout"
         type="button"
-        class="px-3.5 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 hover:cursor-pointer transition"
+        class="flex items-center justify gap-1.5 px-3 py-2 rounded-md bg-red-500 text-white hover:bg-red-700 hover:cursor-pointer transition"
         (click)="onLogout()"
       >
         Logout
-        <i class="fa-solid fa-right-from-bracket ml-1"></i>
+        <icon-logout size="20" />
       </button>
     </div>
   }

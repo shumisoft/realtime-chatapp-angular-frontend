@@ -7,12 +7,13 @@ import { ChatRoom, TypingEventDTO } from '../../../../core/models/message.model'
 import { UserState } from '../../../../core/models/user.models';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
+import { AttachFile, Send } from '../../../../shared/components/icons';
 
 @Component({
   selector: 'app-chat-input-area',
   templateUrl: './chat-input-area.component.html',
   styleUrls: ['./chat-input-area.component.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AttachFile, Send],
 })
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Input() principalUser!: UserState | null;
@@ -31,7 +32,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private isTyping = false;
-  
+
   ngOnInit() {
     // When chat changes → reset typing
     this.selectedChatRoom$
@@ -79,11 +80,9 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
     if (!this.selectedchatroom) return;
     if (!this.principalUser?.userId) return;
 
-    console.log('typing hit...');
-
     // Empty input → stop typing immediately
     if (!value.trim()) {
-      console.log('[emty value after trim]...');
+      console.info('[ChatInputAreaComponent - Event miss] empty input...');
       this.stopTyping();
       return;
     }

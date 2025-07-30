@@ -69,7 +69,6 @@ export class UserEffects {
           ),
           catchError((err) => {
             const error = err?.error?.message || 'Failed to update profile';
-            console.log(err);
 
             this.toast.error(error);
             return of(updatePrincipalUserFailure({ error }));

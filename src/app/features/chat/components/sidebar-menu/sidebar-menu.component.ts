@@ -7,6 +7,13 @@ import { User } from '../../../../core/models/user.models';
 import { createChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import {
+  AddComment,
+  ChatAddOn,
+  GroupAdd,
+  Logout,
+  MoreVertical,
+} from '../../../../shared/components/icons';
 import { NewChat } from '../new-chat/new-chat';
 import { NewGroup } from '../new-group/new-group';
 
@@ -14,7 +21,18 @@ import { NewGroup } from '../new-group/new-group';
   selector: 'app-sidebar-menu',
   templateUrl: './sidebar-menu.component.html',
   styleUrls: ['./sidebar-menu.component.css'],
-  imports: [AvatarComponent, CommonModule, RouterLink, NewChat, NewGroup],
+  imports: [
+    AvatarComponent,
+    CommonModule,
+    RouterLink,
+    NewChat,
+    NewGroup,
+    ChatAddOn,
+    MoreVertical,
+    Logout,
+    GroupAdd,
+    AddComment,
+  ],
 })
 export class SidebarMenuComponent implements OnInit {
   private readonly store = inject(Store);

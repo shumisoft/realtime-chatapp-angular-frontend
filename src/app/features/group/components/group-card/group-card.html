@@ -13,7 +13,7 @@
               (click)="startEdit('name', group.name)"
               title="Click to edit group name"
             >
-              <i class="fa-solid fa-pen"></i>
+              <icon-edit size="22" />
             </button>
           }
         } @else {
@@ -27,7 +27,7 @@
             (click)="saveEdit('name', group.name)"
             title="Click to save group name"
           >
-            <i class="fa-solid fa-check"></i>
+            <icon-check size="26" />
           </button>
         }
       </div>
@@ -43,7 +43,7 @@
               (click)="startEdit('description', group.description)"
               title="Click to edit group description"
             >
-              <i class="fa-solid fa-pen"></i>
+              <icon-edit size="22" />
             </button>
           }
         } @else {
@@ -57,7 +57,7 @@
             (click)="saveEdit('description', group.description)"
             title="Click to save group description"
           >
-            <i class="fa-solid fa-check"></i>
+            <icon-check size="26" />
           </button>
         }
       </div>
@@ -71,10 +71,10 @@
         @if (isGroupAdmin) {
           <button
             title="Add member to group"
-            class="text-primary-500 transition-colors rounded-md text-left border-gray-200 text-sm hover:text-primary-700 cursor-pointer"
+            class="flex justify-between gap-2 items-center gap text-primary-500 transition-colors rounded-md text-left border-gray-200 text-sm hover:text-primary-700 cursor-pointer"
             (click)="onAddMember()"
           >
-            <i class="fa-solid fa-user-plus mr-2"></i>
+            <icon-person-add size="20" />
             Add Member
           </button>
         }
@@ -113,7 +113,7 @@
                   title="Member options"
                   (click)="toggleMemberMenu(member.userId, $event)"
                 >
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                  <icon-more-vertical size="22" />
                 </button>
 
                 @if (openMenuUserId === member.userId) {
@@ -123,18 +123,18 @@
                     <!-- Placeholder for future options -->
 
                     <!-- <button
-                      class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-md text-gray-600 hover:bg-gray-100 cursor-pointer transition-colors"
+                      class="w-full flex items-center gap-2.5 px-2.5 py-2 text-sm rounded-md text-gray-600 hover:bg-gray-100 cursor-pointer transition-colors"
                     >
-                      <i class="fa-solid fa-shield w-4 text-base"></i>
+                      <icon-person-shield size="20" />
                       Make admin
                     </button> -->
 
                     <!-- Remove member -->
                     <button
-                      class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-md text-red-500 hover:bg-red-50 cursor-pointer transition-colors"
+                      class="w-full flex items-center gap-2.5 px-2.5 py-2 text-sm rounded-md text-red-500 hover:bg-red-50 cursor-pointer transition-colors"
                       (click)="onRemoveMember(member)"
                     >
-                      <i class="fa-solid fa-circle-minus w-4 text-base"></i>
+                      <icon-person-remove size="20" />
                       Remove member
                     </button>
                   </div>
@@ -148,10 +148,10 @@
     @if (isGroupAdmin) {
       <button
         title="Delete group"
-        class="w-full text-red-500 hover:bg-red-50 transition-colors p-4 rounded-md text-sm font-medium text-left cursor-pointer mt-3 border-gray-200"
+        class="w-full flex items-center gap-2 text-red-500 hover:bg-red-50 transition-colors p-4 rounded-md text-sm font-medium text-left cursor-pointer mt-3 border-gray-200"
         (click)="openDeleteGroupDialog()"
       >
-        <i class="fa-solid fa-trash mr-2"></i>
+        <icon-delete size="20" />
         Delete group
       </button>
     }

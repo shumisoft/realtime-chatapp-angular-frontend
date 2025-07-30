@@ -18,11 +18,12 @@ import {
 } from '../../../../core/models/message.model';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { selectUserById, selectUserColor } from '../../../../core/store/users/users.selectors';
+import { Check, DoneAll, Schedule } from '../../../../shared/components/icons';
 
 @Component({
   selector: 'app-chat-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Check, DoneAll, Schedule],
   templateUrl: './chat-card.component.html',
   styleUrl: './chat-card.component.css',
 })
@@ -38,6 +39,8 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
   private readonly store = inject(Store);
   readonly principalUser$ = this.store.select(selectPrincipleUser);
   readonly userCache$ = this.store.select(selectUserById);
+
+  readonly messageStatus = MessageStatus;
 
   formattedTime(timestamp: string): string {
     const d = new Date(timestamp);

@@ -10,14 +10,20 @@
     {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
   <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
-  <div class="flex text-[.55rem] gap-2">
+  <div class="flex text-[.55rem] items-center gap-1">
     <p class="ml-auto">
       {{ formattedTime(message.timestamp) }}
-      @if (isDirectMessageRoom()) {
-        <span class="material-symbols-outlined"> check </span>
-        <span class="material-symbols-outlined"> schedule </span>
-        <span class="material-symbols-outlined"> done_all </span>
-      }
     </p>
+    <span>
+      @if (message.userId === (principalUser$ | async)?.userId && isDirectMessageRoom()) {
+        @if (message.status === messageStatus.READ) {
+          <icon-done-all size="16" />
+        } @else if (message.status === messageStatus.DELIVERED) {
+          <icon-check size="16" />
+        } @else {
+          <icon-schedule size="12" />
+        }
+      }
+    </span>
   </div>
 </div>

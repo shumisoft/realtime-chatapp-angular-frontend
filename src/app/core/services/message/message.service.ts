@@ -41,8 +41,6 @@ export class MessageService {
   }
 
   sendTypingEvent(dto: TypingEventDTO) {
-    console.log("typing service: ", dto);
-    
     this.ws.publish('/app/chat.typing', dto);
   }
 

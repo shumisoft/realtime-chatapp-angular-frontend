@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
 import { UserService } from '../../../../core/services/user/user.service';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import { Search, Close } from '../../../../shared/components/icons';
 
 interface User {
   userId: string;
@@ -16,7 +17,7 @@ interface User {
 @Component({
   selector: 'app-new-group',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AvatarComponent],
+  imports: [CommonModule, ReactiveFormsModule, AvatarComponent, Search, Close],
   templateUrl: './new-group.html',
   styleUrl: './new-group.css',
 })
