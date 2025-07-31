@@ -51,7 +51,11 @@ export class UserSearch {
       )
       .subscribe((response) => {
         this.isLoading.set(false);
-        this.searchResults = (response?.content as User[]) ?? null;
+        this.searchResults = response?.content
+          ? [...(response?.content as User[])].sort((a, b) =>
+              (a?.fullName || '').localeCompare(b?.fullName || ''),
+            )
+          : null;
       });
   }
 

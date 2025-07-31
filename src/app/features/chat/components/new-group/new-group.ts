@@ -5,15 +5,7 @@ import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs
 import { UserService } from '../../../../core/services/user/user.service';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { Search, Close } from '../../../../shared/components/icons';
-
-interface User {
-  userId: string;
-  fullName: string;
-  username: string;
-  bio?: string;
-  avatar?: string;
-}
-
+import { User } from '../../../../core/models/user.models';
 @Component({
   selector: 'app-new-group',
   standalone: true,
@@ -44,12 +36,12 @@ export class NewGroup {
 
   private searchSubject = new Subject<string>();
 
-  searchResults: User[] | null = null;
+  searchResults: Partial<User>[] | null = null;
 
   // Cache raw backend response
-  private lastSearchResponse: User[] = [];
+  private lastSearchResponse: Partial<User>[] = [];
 
-  selectedUsers: User[] = [];
+  selectedUsers: Partial<User>[] = [];
 
   constructor() {
     this.searchSubject
@@ -75,10 +67,14 @@ export class NewGroup {
         }
 
         // Store raw response
-        this.lastSearchResponse = response.content as User[];
+        this.lastSearchResponse = response.content;
 
         // Filter already selected users
-        this.searchResults = this.filterSelectedUsers(this.lastSearchResponse);
+        const filtered = this.filterSelectedUsers(this.lastSearchResponse);
+
+        this.searchResults = [...filtered].sort((a, b) =>
+          (a?.fullName || '').localeCompare(b?.fullName || ''),
+        );
       });
   }
 
@@ -97,7 +93,7 @@ export class NewGroup {
   }
 
   // Selection
-  selectUser(user: User) {
+  selectUser(user: Partial<User>) {
     if (this.selectedUsers.some((u) => u.userId === user.userId)) return;
 
     this.selectedUsers.push(user);
@@ -111,7 +107,7 @@ export class NewGroup {
   }
 
   // Removal
-  removeUser(userId: string) {
+  removeUser(userId: string | null | undefined) {
     this.selectedUsers = this.selectedUsers.filter((u) => u.userId !== userId);
 
     // If there is active search text,
@@ -121,7 +117,7 @@ export class NewGroup {
     }
   }
 
-  private filterSelectedUsers(users: User[]): User[] {
+  private filterSelectedUsers(users: Partial<User>[]): Partial<User>[] {
     return users.filter(
       (user) => !this.selectedUsers.some((selected) => selected.userId === user.userId),
     );
@@ -141,7 +137,9 @@ export class NewGroup {
     this.create.emit({
       name: this.form.value.name.trim(),
       description: this.form.value.description.trim(),
-      memberIds: this.selectedUsers.filter(Boolean).map((u) => u.userId),
+      memberIds: this.selectedUsers
+        .map((u) => u.userId)
+        .filter((id): id is string => typeof id === 'string'),
     });
   }
 

@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, distinctUntilChanged, filter, map, switchMap, take, tap } from 'rxjs';
-import { ChatRoom } from '../../../../core/models/message.model';
+import { ChatRoom, ChatRoomMember } from '../../../../core/models/message.model';
 import { User } from '../../../../core/models/user.models';
 import {
   addMember,
@@ -69,7 +69,7 @@ export class Ui implements OnInit {
           const sortedGroup = group
             ? {
                 ...group,
-                members: [...(group.members || [])].sort((a, b) => (a.admin ? -1 : 1)),
+                members: this.sortMembersByAdminAndName(group.members),
               }
             : null;
 
@@ -87,6 +87,16 @@ export class Ui implements OnInit {
       ),
     ),
   );
+
+  private sortMembersByAdminAndName(members: ChatRoomMember[] = []): ChatRoomMember[] {
+    return [...members].sort((a, b) => {
+      if (a.admin !== b.admin) {
+        return a.admin ? -1 : 1;
+      }
+
+      return (a.user.fullName || '').localeCompare(b.user.fullName || '');
+    });
+  }
 
   onUpdateGroup(payload: Partial<Pick<ChatRoom, 'name' | 'description'>>) {
     // Get current chatId from route
