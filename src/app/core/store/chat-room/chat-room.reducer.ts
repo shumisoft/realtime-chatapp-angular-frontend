@@ -103,11 +103,16 @@ export const chatRoomReducer = createReducer(
     creating: true,
   })),
 
-  on(createChatRoomSuccess, (state, { data }) => ({
-    ...state,
-    creating: false,
-    rooms: [data, ...state.rooms],
-  })),
+  // Upsert Room
+  on(createChatRoomSuccess, (state, { data }) => {
+    const exists = state.rooms.some((r) => r.chatId === data.chatId);
+
+    return {
+      ...state,
+      creating: false,
+      rooms: exists ? state.rooms : [data, ...state.rooms], // insert new
+    };
+  }),
 
   on(createChatRoomFailure, (state, { error }) => ({
     ...state,
