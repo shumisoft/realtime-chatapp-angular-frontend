@@ -6,7 +6,7 @@
 >
   <app-avatar class="h-12 w-12 flex items-center justify-center" />
   <div class="ml-2 flex flex-col items-start justify-center w-full gap-0.5">
-    <h2 class="text-xl font-medium flex justify-between items-center w-full">
+    <h2 class="text-lg font-medium flex justify-between items-center w-full">
       <span>{{ roomName(chatroom, principalUser$ | async) }}</span>
       @if (chatroom.latestMessage?.timestamp != null) {
         <p class="text-[.55rem] text-gray-500">

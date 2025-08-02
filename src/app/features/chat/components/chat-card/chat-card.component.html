@@ -14,14 +14,16 @@
     <p class="ml-auto">
       {{ formattedTime(message.timestamp) }}
     </p>
-    <span>
+    <span class="text-gray-300">
       @if (message.userId === (principalUser$ | async)?.userId && isDirectMessageRoom()) {
         @if (message.status === messageStatus.READ) {
-          <icon-done-all size="16" />
+          <icon-done-all title="read" size="16" class="fill-green-300" />
         } @else if (message.status === messageStatus.DELIVERED) {
-          <icon-check size="16" />
+          <icon-done-all title="delivered" size="16" />
+        } @else if (message.status === messageStatus.SENT) {
+          <icon-check title="sent" size="16" />
         } @else {
-          <icon-schedule size="12" />
+          <icon-schedule title="sending..." size="12" />
         }
       }
     </span>
