@@ -7,7 +7,8 @@ import { MessageEventCommunicator } from '../../../../core/services/message-even
 import { MessageService } from '../../../../core/services/message/message.service';
 import { logout } from '../../../../core/store/auth/auth.actions';
 import {
-  loadMyChatRooms
+  loadMyChatRooms,
+  updateChatRoomLatestMessage,
 } from '../../../../core/store/chat-room/chat-room.actions';
 import {
   selectChatRoomLoading,
@@ -55,6 +56,7 @@ export class SidebarComponent implements OnInit {
             for (let room of rooms) {
               this.messageService.listenToChat(room.chatId).subscribe((msg) => {
                 this.store.dispatch(incomingWsMessage({ message: msg }));
+                this.store.dispatch(updateChatRoomLatestMessage({ message: msg }));
                 this.sendData(msg);
               });
             }
