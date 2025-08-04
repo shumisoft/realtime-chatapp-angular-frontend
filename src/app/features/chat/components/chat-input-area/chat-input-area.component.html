@@ -1,3 +1,11 @@
+@if (imagePreviewUrl) {
+  <app-image-preview
+    [imageUrl]="imagePreviewUrl"
+    [removable]="true"
+    (remove)="removeSelectedImage()"
+    (imageClicked)="openViewer()"
+  />
+}
 <div class="flex items-center gap-2 p-3 border-t border-gray-300 bg-white">
   <textarea
     [(ngModel)]="message"
@@ -7,7 +15,13 @@
     (ngModelChange)="onTyping($event)"
   ></textarea>
 
-  <div title="Attach file" class="text-gray-500 cursor-not-allowed">
+  <input type="file" accept="image/*" hidden #fileInput (change)="onImageSelected($event)" />
+
+  <div
+    title="Attach image"
+    class="text-gray-500 hover:text-primary-500 cursor-pointer"
+    (click)="fileInput.click()"
+  >
     <icon-attach-file />
   </div>
 
@@ -20,3 +34,6 @@
     <icon-send />
   </button>
 </div>
+@if (isViewerOpen) {
+  <app-image-viewer-modal [imageUrl]="imagePreviewUrl" (close)="closeViewer()" />
+}

@@ -1,0 +1,17 @@
+@if (imageUrl) {
+  <div
+    class="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+    (click)="onBackdropClick()"
+  >
+    <button
+      title="Close preview"
+      (click)="close.emit()"
+      class="absolute top-3 right-3 bg-white hover:bg-white/90 text-black rounded-full w-6 h-6 flex items-center justify-center shadow-lg cursor-pointer"
+    >
+      <icon-close size="18" />
+    </button>
+    <div (click)="onContentClick($event)" class="relative max-w-5xl max-h-[90vh] bg-white">
+      <img [src]="imageUrl" class="shadow-2xl max-h-[90vh] object-contain" />
+    </div>
+  </div>
+}

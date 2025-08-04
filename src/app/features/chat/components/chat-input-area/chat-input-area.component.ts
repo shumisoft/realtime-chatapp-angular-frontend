@@ -8,12 +8,14 @@ import { UserState } from '../../../../core/models/user.models';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { AttachFile, Send } from '../../../../shared/components/icons';
+import { ImagePreview } from "../../../../shared/components/image-preview/image-preview";
+import { ImageViewerModal } from "../../../../shared/components/image-viewer-modal/image-viewer-modal";
 
 @Component({
   selector: 'app-chat-input-area',
   templateUrl: './chat-input-area.component.html',
   styleUrls: ['./chat-input-area.component.css'],
-  imports: [CommonModule, FormsModule, AttachFile, Send],
+  imports: [CommonModule, FormsModule, AttachFile, Send, ImagePreview, ImageViewerModal],
 })
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Input() principalUser!: UserState | null;
@@ -32,6 +34,10 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private isTyping = false;
+
+  selectedImageFile: File | null = null;
+  imagePreviewUrl: string | null = null;
+  isViewerOpen = false;
 
   ngOnInit() {
     // When chat changes → reset typing
@@ -114,6 +120,45 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
 
     this.sendTypingEvent(false);
     this.isTyping = false;
+  }
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // 1️⃣ Validate image type
+    if (!file.type.startsWith('image/')) {
+      console.warn('Only image files allowed');
+      return;
+    }
+
+    this.selectedImageFile = file;
+
+    // 2️⃣ Generate preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreviewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input value so same file can be selected again later
+    input.value = '';
+  }
+
+  removeSelectedImage() {
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
+  }
+
+  openViewer() {
+    this.isViewerOpen = true;
+    console.log("image clicked");
+  }
+
+  closeViewer() {
+    this.isViewerOpen = false;
   }
 
   ngOnDestroy() {

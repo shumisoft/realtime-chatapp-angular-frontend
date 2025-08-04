@@ -1,0 +1,22 @@
+@if (imageUrl) {
+  <div class="relative w-40 mx-auto cursor-pointer group" (click)="onImageClick()">
+    <img [src]="imageUrl" class="border border-gray-300 transition block" />
+
+    <!-- Overlay -->
+    <div
+      title="Click to preview"
+      class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition"
+    ></div>
+
+    @if (removable) {
+      <button
+        type="button"
+        title="Remove"
+        (click)="onRemoveClick($event)"
+        class="absolute -top-1 -right-1 bg-red-500 hover:bg-red-700 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs shadow cursor-pointer"
+      >
+        <icon-close size="12" />
+      </button>
+    }
+  </div>
+}
