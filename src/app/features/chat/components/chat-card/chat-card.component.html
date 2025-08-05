@@ -23,7 +23,7 @@
   }
   <div class="flex text-[.55rem] items-center gap-1">
     <p class="ml-auto">
-      {{ formattedTime(message.timestamp) }}
+      {{ message.timestamp | date: 'h:mm a' }}
     </p>
     <span class="text-gray-300">
       @if (message.userId === (principalUser$ | async)?.userId && isDirectMessageRoom()) {

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, mergeMap, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ChatRoomService } from '../../services/chat-room/chat-room.service';
 
 import {
@@ -26,6 +26,7 @@ import {
 import { ChatRoom } from '../../models/message.model';
 import { upsertUser } from '../users/users.actions';
 import { Router } from '@angular/router';
+import { logout } from '../auth/auth.actions';
 
 @Injectable()
 export class ChatRoomEffects {
@@ -64,6 +65,7 @@ export class ChatRoomEffects {
       ofType(loadMyChatRooms),
       mergeMap(({ page, size }) =>
         this.chatService.getMyRooms(page, size).pipe(
+          takeUntil(this.actions$.pipe(ofType(logout))), // Cancel on logout
           mergeMap((data) => {
             const users = this.extractUsersFromRooms(data);
 
