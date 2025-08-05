@@ -20,11 +20,12 @@ import {
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { selectUserById, selectUserColor } from '../../../../core/store/users/users.selectors';
 import { Check, DoneAll, Schedule } from '../../../../shared/components/icons';
+import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
 
 @Component({
   selector: 'app-chat-card',
   standalone: true,
-  imports: [CommonModule, Check, DoneAll, Schedule],
+  imports: [CommonModule, Check, DoneAll, Schedule, ImageViewerModal],
   templateUrl: './chat-card.component.html',
   styleUrl: './chat-card.component.css',
 })
@@ -42,6 +43,8 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
   readonly userCache$ = this.store.select(selectUserById);
 
   readonly messageStatus = MessageStatus;
+  isViewerOpen = false;
+  imagePreviewUrl: string | null = null;
 
   formattedTime(timestamp: string): string {
     const d = new Date(timestamp);
@@ -72,6 +75,17 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
 
       this.observer.observe(this.el.nativeElement);
     }
+  }
+
+  openViewer(imageUrl: string) {
+    this.imagePreviewUrl = imageUrl;
+    this.isViewerOpen = true;
+    console.log('image clicked');
+  }
+
+  closeViewer() {
+    this.imagePreviewUrl = null;
+    this.isViewerOpen = false;
   }
 
   ngOnDestroy() {

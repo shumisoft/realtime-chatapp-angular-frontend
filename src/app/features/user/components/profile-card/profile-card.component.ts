@@ -1,20 +1,48 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { map, Observable } from 'rxjs';
 import { User } from '../../../../core/models/user.models';
+import { StorageService } from '../../../../core/services/storage/storage.service';
 import { updatePrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import {
+  Check,
+  Edit,
+  FolderOpen,
+  Logout,
+  Upload,
+  Visibility,
+} from '../../../../shared/components/icons';
+import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
 import { EditUserRequest } from './../../../../core/models/user.models';
-import { Edit, Logout, Check } from '../../../../shared/components/icons';
 
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarComponent, Edit, Logout, Check],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AvatarComponent,
+    Edit,
+    Logout,
+    Check,
+    ImageViewerModal,
+    Visibility,
+    Upload,
+    FolderOpen,
+  ],
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.css'],
 })
@@ -22,6 +50,7 @@ export class ProfileCardComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
   private readonly toast = inject(HotToastService);
+  private readonly storageService = inject(StorageService);
 
   @Input() loading!: Observable<boolean>;
   @Input() userData!: Observable<User | null>;
@@ -31,6 +60,11 @@ export class ProfileCardComponent implements OnInit {
 
   form: any = {};
   editField: Record<string, boolean> = {};
+
+  isAvatarMenuOpen = false;
+  isViewerOpen = false;
+  selectedImageUrl: string | null = null;
+  isUploadingAvatar = false;
 
   constructor() {}
 
@@ -59,6 +93,80 @@ export class ProfileCardComponent implements OnInit {
       console.info(`Updated ${field} to`, this.form[field]);
     }
     this.editField[field] = false;
+  }
+
+  // Close dropdown when clicking outside
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.isAvatarMenuOpen = false;
+  }
+
+  onAvatarClick(user: User | null, event: MouseEvent) {
+    event.stopPropagation(); // prevent document click from immediately closing it
+
+    if (!user) return;
+
+    // PRINCIPAL USER
+    if (this.isPrincipalUser) {
+      if (!user.avatar) {
+        // No avatar → directly upload
+        this.triggerFileInput();
+      } else {
+        // Avatar exists → show menu
+        this.isAvatarMenuOpen = !this.isAvatarMenuOpen;
+      }
+    }
+
+    // NON-PRINCIPAL USER
+    else {
+      if (user.avatar) {
+        this.openViewer(user.avatar);
+      }
+    }
+  }
+
+  triggerFileInput() {
+    const input = document.getElementById('avatarFileInput') as HTMLInputElement;
+    input?.click();
+  }
+
+  onAvatarSelected(event: Event, user: User) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) return;
+
+    this.isUploadingAvatar = true;
+
+    this.storageService.uploadFile(file).subscribe({
+      next: (imageUrl) => {
+        this.store.dispatch(
+          updatePrincipalUser({
+            payload: { ...user, avatar: imageUrl },
+          }),
+        );
+
+        this.isUploadingAvatar = false;
+        this.isAvatarMenuOpen = false;
+      },
+      error: () => {
+        this.isUploadingAvatar = false;
+      },
+    });
+
+    input.value = '';
+  }
+
+  openViewer(url: string) {
+    this.selectedImageUrl = url;
+    this.isViewerOpen = true;
+  }
+
+  closeViewer() {
+    this.selectedImageUrl = null;
+    this.isViewerOpen = false;
   }
 
   onLogout(): void {

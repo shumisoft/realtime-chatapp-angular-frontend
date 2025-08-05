@@ -10,7 +10,13 @@
     {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
   @if (isImage()) {
-    <img class="my-2 rounded" src="{{ message.content }}" alt="" />
+    <img
+      class="mt-1 mb-2 rounded-md"
+      [src]="message.content"
+      alt=""
+      (click)="openViewer(message.content)"
+      loading="lazy"
+    />
   } @else {
     <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
   }
@@ -33,3 +39,7 @@
     </span>
   </div>
 </div>
+
+@if (isViewerOpen) {
+  <app-image-viewer-modal [imageUrl]="imagePreviewUrl" (close)="closeViewer()" />
+}

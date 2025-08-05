@@ -1,13 +1,69 @@
 <div class="max-w-lg flex flex-col mx-auto mt-4 p-8 bg-gray-50 rounded-xl shadow-lg">
-  <div class="flex flex-col justify-center sm:flex-row sm:items-center sm:space-x-6">
-    <app-avatar
-      [url]="(userData | async)?.avatar || null"
-      alt="User Avatar"
-      class="w-60 h-60 rounded-full object-cover mx-auto sm:mx-0 border border-gray-400"
-    />
-  </div>
-
   @if (userData | async; as user) {
+    <div class="relative flex justify-center">
+      <div
+        [title]="isPrincipalUser ? 'Edit image' : user?.avatar ? 'View photo' : ''"
+        class="relative w-60 h-60 rounded-full overflow-hidden border border-gray-400"
+        [class.cursor-pointer]="user?.avatar"
+        (click)="onAvatarClick(user, $event)"
+      >
+        <app-avatar [url]="user?.avatar || null" />
+
+        <!-- Hover Overlay -->
+        @if (isPrincipalUser) {
+          <div
+            class="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 hover:opacity-100 transition duration-200"
+          >
+            @if (isPrincipalUser) {
+              @if (user?.avatar) {
+                <span class="flex items-center justify-center gap-2 text-white/80"
+                  ><icon-edit />
+                </span>
+              } @else {
+                <span class="flex items-center justify-center gap-2 text-white/80">
+                  <icon-upload />
+                  Upload profile photo
+                </span>
+              }
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Principal Dropdown Menu -->
+      @if (isPrincipalUser && isAvatarMenuOpen) {
+        <div
+          class="absolute top-full mt-2 w-max bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1.5"
+        >
+          @if (user?.avatar) {
+            <button
+              class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
+              (click)="openViewer(user?.avatar!)"
+            >
+              <icon-visibility size="22" />
+              View photo
+            </button>
+          }
+          <button
+            class="flex items-center gap-2.5 w-full text-left px-3.5 py-1.5 hover:bg-gray-100 rounded-md cursor-pointer"
+            (click)="triggerFileInput()"
+          >
+            <icon-folder-open size="22" />
+            Change profile
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Hidden File Input -->
+    <input
+      type="file"
+      id="avatarFileInput"
+      hidden
+      accept="image/*"
+      (change)="onAvatarSelected($event, user)"
+    />
+
     <form class="mt-8 space-y-2">
       <!-- Username Field -->
       <div class="flex items-center justify-between group p-3">
@@ -184,3 +240,8 @@
     </div>
   }
 </div>
+
+<!-- Image Viewer -->
+@if (isViewerOpen) {
+  <app-image-viewer-modal [imageUrl]="selectedImageUrl" (close)="closeViewer()" />
+}

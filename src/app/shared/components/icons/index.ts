@@ -21,6 +21,8 @@
 
 export { AddComment } from './add-comment/add-comment';
 
+export { AddPhotoAlternate } from './add-photo-alternate/add-photo-alternate';
+
 export { AttachFile } from './attach-file/attach-file';
 
 export { ChatAddOn } from './chat-add-on/chat-add-on';
@@ -34,6 +36,10 @@ export { Delete } from './delete/delete';
 export { DoneAll } from './done-all/done-all';
 
 export { Edit } from './edit/edit';
+
+export { Folder } from './folder/folder';
+
+export { FolderOpen } from './folder-open/folder-open';
 
 export { GroupAdd } from './group-add/group-add';
 
@@ -50,5 +56,9 @@ export { PersonShield } from './person-shield/person-shield';
 export { Search } from './search/search';
 
 export { Send } from './send/send';
+
+export { Upload } from './upload/upload';
+
+export { Visibility } from './visibility/visibility';
 
 export { Schedule } from './schedule/schedule';

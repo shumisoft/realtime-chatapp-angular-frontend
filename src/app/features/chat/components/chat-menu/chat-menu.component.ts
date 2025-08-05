@@ -139,4 +139,13 @@ export class ChatMenuComponent implements OnInit {
     // For Groups [PUBLIC, PRIVATE]
     this.router.navigate(['/group', chatRoom.chatId]);
   }
+
+  roomImage(chatRoom: ChatRoom | null, principaluser: UserState | null) {
+    const isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
+
+    return isDirectMessage
+      ? chatRoom?.members.find((member) => member.user.userId != principaluser?.userId)?.user
+          .avatar || null
+      : null;
+  }
 }

@@ -3,7 +3,10 @@
   [title]="isDirectMessage ? 'Profile details' : 'Group Details'"
 >
   @if (selectedChatRoom$ | async) {
-    <app-avatar class="h-10 w-10" />
+    <app-avatar
+      [url]="roomImage(selectedChatRoom$ | async, principalUser$ | async)"
+      class="h-10 w-10"
+    />
     <div
       class="ml-4 flex flex-col items-start justify-center hover:cursor-pointer"
       (click)="onChatMenuClick()"

@@ -1,11 +1,10 @@
-<div class="w-full gap-2 flex px-4 h-16 items-center bg-top-bar">
-  <app-avatar class="h-10 w-10" />
+<div class="w-full gap-2 flex px-4 h-16 items-center bg-top-bar" >
+  <app-avatar [url]="(principleUser$ | async)?.avatar || null" class="h-10 w-10" />
   <a routerLink="/me" class="text-lg truncate hover:text-gray-600">
     {{ (principleUser$ | async)?.fullName }}</a
   >
   <div class="ml-auto text-gray-500 flex items-center justify-center gap-2">
     <!-- New Chat: PLUS BUTTON -->
-    <!-- PLUS MENU -->
     <div class="relative">
       <div
         title="New chat"
