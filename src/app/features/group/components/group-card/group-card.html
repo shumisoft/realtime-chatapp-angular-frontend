@@ -1,15 +1,77 @@
 @if (group) {
   <div class="p-6 max-w-lg rounded-xl shadow-xl mx-auto">
     <!-- Header -->
-    <div class="mb-6 gap-2 flex flex-col">
+    <div class="mb-6 gap-6 flex flex-col">
+      <div class="relative flex justify-center group">
+        <div
+          [title]="isGroupAdmin ? 'Edit group icon' : group.icon ? 'View photo' : ''"
+          class="relative w-60 h-60 rounded-full overflow-hidden border border-gray-400"
+          [class.cursor-pointer]="isGroupAdmin || group.icon"
+          (click)="onGroupIconClick($event)"
+        >
+          <app-avatar [url]="group.icon || null" />
+
+          @if (isGroupAdmin) {
+            <div
+              class="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 transition duration-200"
+            >
+              @if (group.icon) {
+                <span class="flex items-center gap-2 text-white/80">
+                  <icon-edit />
+                </span>
+              } @else {
+                <span class="flex items-center gap-2 text-white/80">
+                  <icon-upload />
+                  Upload group icon
+                </span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Admin Dropdown -->
+        @if (isGroupAdmin && isGroupIconMenuOpen) {
+          <div
+            class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-max bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-1.5"
+            (click)="$event.stopPropagation()"
+          >
+            @if (group.icon) {
+              <button
+                class="flex items-center gap-2.5 w-full px-3.5 py-1.5 hover:bg-gray-100 rounded-md"
+                (click)="openViewer(group.icon!)"
+              >
+                <icon-visibility size="20" />
+                View photo
+              </button>
+            }
+
+            <button
+              class="flex items-center gap-2.5 w-full px-3.5 py-1.5 hover:bg-gray-100 rounded-md"
+              (click)="triggerGroupFileInput()"
+            >
+              <icon-folder-open size="20" />
+              Change group icon
+            </button>
+          </div>
+        }
+      </div>
+
+      <input
+        type="file"
+        id="groupIconFileInput"
+        hidden
+        accept="image/*"
+        (change)="onGroupIconSelected($event)"
+      />
+
       <!-- Group Name -->
-      <div class="flex items-center gap-2 group">
+      <div class="flex justify-center items-center gap-2 group relative mb-2">
         @if (!editField.name) {
-          <h1 class="text-2xl font-semibold">{{ group.name }}</h1>
+          <h1 class="text-2xl font-medium border-b border-transparent">{{ group.name }}</h1>
 
           @if (isGroupAdmin) {
             <button
-              class="hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
+              class="absolute right-0 hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
               (click)="startEdit('name', group.name)"
               title="Click to edit group name"
             >
@@ -18,12 +80,12 @@
           }
         } @else {
           <input
-            class="border-b text-2xl font-semibold focus:outline-none focus:border-b-2"
+            class="border-b text-2xl text-center font-medium focus:outline-none focus:border-blue-500"
             [(ngModel)]="form.name"
             autofocus
           />
           <button
-            class="text-gray-400 hover:text-blue-500 cursor-pointer"
+            class="absolute right-0 text-gray-400 hover:text-blue-500 cursor-pointer"
             (click)="saveEdit('name', group.name)"
             title="Click to save group name"
           >
@@ -33,13 +95,13 @@
       </div>
 
       <!-- Group Description -->
-      <div class="flex items-center gap-2 group">
+      <div class="flex items-center gap-2 group relative">
         @if (!editField.description) {
-          <p class="text-gray-500">{{ group.description }}</p>
+          <p class="border-b border-transparent text-gray-500">{{ group.description }}</p>
 
           @if (isGroupAdmin) {
             <button
-              class="hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
+              class="absolute right-0 hidden group-hover:inline-flex text-gray-400 hover:text-blue-500 cursor-pointer"
               (click)="startEdit('description', group.description)"
               title="Click to edit group description"
             >
@@ -48,12 +110,12 @@
           }
         } @else {
           <input
-            class="border-b w-full text-gray-500 focus:outline-none focus:border-b-2"
+            class="border-b w-[90%] text-gray-500 focus:outline-none focus:border-blue-500"
             [(ngModel)]="form.description"
             autofocus
           />
           <button
-            class="text-gray-400 hover:text-blue-500"
+            class="absolute right-0 text-gray-400 hover:text-blue-500"
             (click)="saveEdit('description', group.description)"
             title="Click to save group description"
           >
@@ -64,9 +126,9 @@
     </div>
 
     <!-- Members -->
-    <div>
+    <div class="mb-2">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-medium text-gray-500 mb-3">Members ({{ group.members.length }})</h2>
+        <h2 class="text-sm font-medium text-gray-500">Members ({{ group.members.length }})</h2>
 
         @if (isGroupAdmin) {
           <button
@@ -148,7 +210,7 @@
     @if (isGroupAdmin) {
       <button
         title="Delete group"
-        class="w-full flex items-center gap-2 text-red-500 hover:bg-red-50 transition-colors p-4 rounded-md text-sm font-medium text-left cursor-pointer mt-3 border-gray-200"
+        class="w-full flex items-center gap-2 text-red-500 hover:bg-red-50 transition-colors p-4 rounded-md text-sm font-medium text-left cursor-pointer border-gray-200"
         (click)="openDeleteGroupDialog()"
       >
         <icon-delete size="20" />
@@ -187,4 +249,8 @@
     (primaryButtonAction)="confirmDeleteGroup()"
     (secondaryButtonAction)="closeDeleteGroupDialog()"
   />
+}
+<!-- Image Viewer -->
+@if (isViewerOpen) {
+  <app-image-viewer-modal [imageUrl]="selectedImageUrl" (close)="closeViewer()" />
 }

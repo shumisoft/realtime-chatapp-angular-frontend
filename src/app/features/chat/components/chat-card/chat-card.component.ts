@@ -80,7 +80,6 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
   openViewer(imageUrl: string) {
     this.imagePreviewUrl = imageUrl;
     this.isViewerOpen = true;
-    console.log('image clicked');
   }
 
   closeViewer() {

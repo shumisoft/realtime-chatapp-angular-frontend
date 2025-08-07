@@ -11,6 +11,7 @@ import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-ro
 import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import { ChatRoomUtil } from '../../../../core/utils/chat-room.util';
 
 @Component({
   selector: 'app-chat-menu',
@@ -25,6 +26,7 @@ export class ChatMenuComponent implements OnInit {
   private readonly userStatusService = inject(UserStatusService);
   private userStatus?: UserStatus | null;
   private userStatusSubcription?: Subscription;
+  readonly util = ChatRoomUtil;
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   readonly principalUser$ = this.store.select(selectPrincipleUser);
@@ -39,27 +41,27 @@ export class ChatMenuComponent implements OnInit {
   constructor() {
     combineLatest([this.selectedChatRoom$, this.principalUser$])
       .pipe(
-        map(([room, user]) => {
-          if (!room || !user?.userId) return;
+        map(([room, principalUser]) => {
+          if (!room || !principalUser?.userId) return;
 
           this.currentChatRoom = room;
-          this.isDirectMessage = room.type === ChatRoomType.DIRECT_MESSAGE;
+          this.isDirectMessage = this.util.isDirectMessage(room);
 
-          this.currentPrincipalUser = user;
+          this.currentPrincipalUser = principalUser;
 
-          this.typingText$ = this.store.select(selectTypingDisplayText(room.chatId, user.userId));
+          this.typingText$ = this.store.select(
+            selectTypingDisplayText(room.chatId, principalUser.userId),
+          );
 
-          // Find the "Other" user in a DM
-          const otherUser = this.isDirectMessage
-            ? room.members.find((m) => m.user.userId !== user.userId)?.user
-            : null;
+          // Find the "Other" principalUser in a DM
+          const otherUser = this.util.getOtherUser(room, principalUser);
 
-          return { room, user, isDirectMessage: this.isDirectMessage, otherUser };
+          return { room, principalUser, isDirectMessage: this.isDirectMessage, otherUser };
         }),
         switchMap((data) => {
           if (!data) return of(null);
 
-          const { room, user, isDirectMessage, otherUser } = data;
+          const { isDirectMessage, otherUser } = data;
           this.userStatusSubcription?.unsubscribe();
           if (!isDirectMessage || !otherUser) {
             return of(null);
@@ -94,19 +96,9 @@ export class ChatMenuComponent implements OnInit {
   }
 
   roomSubtitle(chatRoom: ChatRoom | null) {
-    let isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
-    return isDirectMessage
+    return this.util.isDirectMessage(chatRoom)
       ? this.displayUserStatusText
       : this.formatUserList(chatRoom?.members.map((member) => member.user.fullName));
-  }
-
-  roomName(chatRoom: ChatRoom | null, principaluser: UserState | null) {
-    let isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
-    return isDirectMessage
-      ? chatRoom?.members
-          .map((member) => member.user)
-          .find((user) => user.userId != principaluser?.userId)?.fullName
-      : chatRoom?.name;
   }
 
   formatUserList(usernames: (string | null)[] | undefined) {
@@ -123,12 +115,8 @@ export class ChatMenuComponent implements OnInit {
     if (!chatRoom) return;
 
     // For DM
-    const isDirectMessage = chatRoom.type === ChatRoomType.DIRECT_MESSAGE;
-
-    if (isDirectMessage) {
-      const otherUser = chatRoom.members
-        .map((m) => m.user)
-        .find((u) => u.userId !== principalUser?.userId);
+    if (this.util.isDirectMessage(chatRoom)) {
+      const otherUser = this.util.getOtherUser(chatRoom, principalUser);
 
       if (otherUser?.username) {
         this.router.navigate(['/user', otherUser.username]);
@@ -138,14 +126,5 @@ export class ChatMenuComponent implements OnInit {
 
     // For Groups [PUBLIC, PRIVATE]
     this.router.navigate(['/group', chatRoom.chatId]);
-  }
-
-  roomImage(chatRoom: ChatRoom | null, principaluser: UserState | null) {
-    const isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
-
-    return isDirectMessage
-      ? chatRoom?.members.find((member) => member.user.userId != principaluser?.userId)?.user
-          .avatar || null
-      : null;
   }
 }

@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   HostListener,
+  inject,
   Input,
   OnChanges,
   Output,
@@ -11,17 +12,21 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ChatRoom, ChatRoomMember } from '../../../../core/models/message.model';
+import { StorageService } from '../../../../core/services/storage/storage.service';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
 import {
   Check,
   Delete,
   Edit,
+  FolderOpen,
   MoreVertical,
   PersonAdd,
   PersonRemove,
-  PersonShield,
+  Upload,
+  Visibility,
 } from '../../../../shared/components/icons';
+import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
 
 @Component({
   standalone: true,
@@ -38,12 +43,17 @@ import {
     MoreVertical,
     PersonAdd,
     PersonRemove,
-    // PersonShield,
+    ImageViewerModal,
+    Upload,
+    Visibility,
+    FolderOpen,
   ],
   templateUrl: './group-card.html',
   styleUrl: './group-card.css',
 })
 export class GroupCard implements OnChanges {
+  private readonly storageService = inject(StorageService);
+
   @Input({ required: true }) group!: ChatRoom;
   @Input({ required: true }) isGroupAdmin = false;
   @Input() principalUserId: string | null = null;
@@ -65,6 +75,12 @@ export class GroupCard implements OnChanges {
   memberToRemove: ChatRoomMember | null = null;
 
   showDeleteGroupDialog = false;
+
+  isViewerOpen = false;
+  selectedImageUrl: string | null = null;
+
+  isGroupIconMenuOpen = false;
+  isUploadingIcon = false;
 
   constructor() {}
 
@@ -93,6 +109,7 @@ export class GroupCard implements OnChanges {
   @HostListener('document:click')
   onDocumentClick() {
     this.openMenuUserId = null;
+    this.isGroupIconMenuOpen = false;
   }
 
   startEdit(field: 'name' | 'description', value: string) {
@@ -164,5 +181,59 @@ export class GroupCard implements OnChanges {
 
   closeDeleteGroupDialog() {
     this.showDeleteGroupDialog = false;
+  }
+
+  openViewer(url: string) {
+    this.selectedImageUrl = url;
+    this.isViewerOpen = true;
+  }
+
+  closeViewer() {
+    this.selectedImageUrl = null;
+    this.isViewerOpen = false;
+  }
+
+  onGroupIconClick(event: MouseEvent) {
+    event.stopPropagation();
+
+    if (this.isGroupAdmin) {
+      if (!this.group.icon) {
+        this.triggerGroupFileInput();
+      } else {
+        this.isGroupIconMenuOpen = !this.isGroupIconMenuOpen;
+      }
+    } else {
+      if (this.group.icon) {
+        this.openViewer(this.group.icon);
+      }
+    }
+  }
+
+  triggerGroupFileInput() {
+    const input = document.getElementById('groupIconFileInput') as HTMLInputElement;
+    input?.click();
+  }
+
+  onGroupIconSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    if (!file.type.startsWith('image/')) return;
+
+    this.isUploadingIcon = true;
+
+    this.storageService.uploadFile(file).subscribe({
+      next: (imageUrl) => {
+        this.updateGroup.emit({ icon: imageUrl });
+        this.isUploadingIcon = false;
+        this.isGroupIconMenuOpen = false;
+      },
+      error: () => {
+        this.isUploadingIcon = false;
+      },
+    });
+
+    input.value = '';
   }
 }

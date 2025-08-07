@@ -9,6 +9,7 @@ import { UserState } from '../../../../core/models/user.models';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { combineLatest, map, Observable } from 'rxjs';
 import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
+import { ChatRoomUtil } from '../../../../core/utils/chat-room.util';
 
 @Component({
   selector: 'app-chat-room-card',
@@ -20,6 +21,7 @@ export class ChatRoomCardComponent implements OnInit {
   private readonly store = inject(Store);
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   readonly principalUser$ = this.store.select(selectPrincipleUser);
+  readonly util = ChatRoomUtil;
 
   @Input() chatroom!: ChatRoom;
   constructor() {}
@@ -55,22 +57,5 @@ export class ChatRoomCardComponent implements OnInit {
 
   openChat() {
     this.store.dispatch(selectChatRoom({ chatId: this.chatroom.chatId }));
-  }
-  roomName(chatRoom: ChatRoom | null, principaluser: UserState | null) {
-    let isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
-    return isDirectMessage
-      ? chatRoom?.members
-          .map((member) => member.user)
-          .find((user) => user.userId != principaluser?.userId)?.fullName
-      : chatRoom?.name;
-  }
-
-  roomImage(chatRoom: ChatRoom | null, principaluser: UserState | null) {
-    const isDirectMessage = chatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
-
-    return isDirectMessage
-      ? chatRoom?.members.find((member) => member.user.userId != principaluser?.userId)?.user
-          .avatar || null
-      : null;
   }
 }

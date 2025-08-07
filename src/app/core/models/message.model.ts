@@ -43,6 +43,7 @@ export interface ChatRoom {
   members: ChatRoomMember[];
   createdAt: string | null;
   description: string;
+  icon: string | null;
   latestMessage?: Message | null;
 }
 
