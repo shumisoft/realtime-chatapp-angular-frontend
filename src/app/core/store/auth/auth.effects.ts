@@ -14,6 +14,7 @@ import {
   registerFailure,
   registerSuccess,
 } from './auth.actions';
+import { clearAppState } from '../app.meta.reducer';
 
 export class AuthEffects {
   private readonly actions = inject(Actions);
@@ -109,16 +110,16 @@ export class AuthEffects {
     { dispatch: false },
   );
 
-  logout$ = createEffect(
-    () =>
-      this.actions.pipe(
-        ofType(logout),
-        tap(() => {
-          localStorage.clear();
-          this.toast.success('Logged out successfully!');
-          this.router.navigateByUrl('/auth/login');
-        }),
-      ),
-    { dispatch: false },
+  logout$ = createEffect(() =>
+    this.actions.pipe(
+      ofType(logout),
+      tap(() => {
+        localStorage.clear();
+        this.toast.success('Logged out successfully!');
+        this.router.navigateByUrl('/auth/login');
+      }),
+      // Dispatch the action to wipe the rest of the app state
+      map(() => clearAppState()),
+    ),
   );
 }
