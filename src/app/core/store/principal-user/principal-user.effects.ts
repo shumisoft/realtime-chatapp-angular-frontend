@@ -2,8 +2,9 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { catchError, exhaustMap, map, of, switchMap, tap } from 'rxjs';
+import { catchError, exhaustMap, map, of, switchMap, takeUntil, tap } from 'rxjs';
 import { UserService } from '../../services/user/user.service';
+import { logout } from '../auth/auth.actions';
 import {
   getPrincipalUser,
   getPrincipalUserFailure,
@@ -24,6 +25,7 @@ export class UserEffects {
       ofType(getPrincipalUser),
       exhaustMap(() =>
         this.userService.getPrincipalUser().pipe(
+          takeUntil(this.actions.pipe(ofType(logout))), // Cancel on logout
           map((data) => {
             return getPrincipalUserSuccess({ data: { ...data, loading: false, error: null } });
           }),
@@ -64,6 +66,7 @@ export class UserEffects {
       ofType(updatePrincipalUser),
       switchMap(({ payload }) =>
         this.userService.updatePrincipalUser(payload).pipe(
+          takeUntil(this.actions.pipe(ofType(logout))), // Cancel on logout
           map((data) =>
             updatePrincipalUserSuccess({ data: { ...data, loading: false, error: null } }),
           ),
