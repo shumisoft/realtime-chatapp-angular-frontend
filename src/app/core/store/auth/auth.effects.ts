@@ -5,6 +5,8 @@ import { HotToastService } from '@ngxpert/hot-toast';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth/auth.service';
+import { MessageService } from '../../services/message/message.service';
+import { clearAppState } from '../app.meta.reducer';
 import {
   login,
   loginFailure,
@@ -14,11 +16,11 @@ import {
   registerFailure,
   registerSuccess,
 } from './auth.actions';
-import { clearAppState } from '../app.meta.reducer';
 
 export class AuthEffects {
   private readonly actions = inject(Actions);
   private readonly authService = inject(AuthService);
+  private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly toast = inject(HotToastService);
 
@@ -114,6 +116,7 @@ export class AuthEffects {
     this.actions.pipe(
       ofType(logout),
       tap(() => {
+        this.messageService.disconnect(); // Disconnect WebSocket
         localStorage.clear();
         this.toast.success('Logged out successfully!');
         this.router.navigateByUrl('/auth/login');

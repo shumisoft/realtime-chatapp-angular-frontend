@@ -101,6 +101,22 @@ export class WebsocketService implements OnDestroy {
     });
   }
 
+  // ← NEW: Add disconnect method
+  disconnect(): void {
+    console.info('[WebSocket] 🔴 Disconnecting...');
+
+    this.stopApplicationHeartbeat();
+
+    if (this.client && this.connected) {
+      this.client.deactivate();
+      this.connected = false;
+      console.info('[WebSocket] 💀 Disconnected');
+    }
+
+    // Clear pending subscriptions
+    this.pendingSubscriptions = [];
+  }
+
   private startApplicationHeartbeat() {
     this.stopApplicationHeartbeat(); // Ensure no duplicate loops
 

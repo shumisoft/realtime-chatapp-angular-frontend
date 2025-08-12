@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { tap } from 'rxjs';
+import { Subject, takeUntil, tap } from 'rxjs';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { selectAcessToken } from '../../../../core/store/auth/auth.selectors';
 import { getPrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
@@ -14,14 +14,16 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   templateUrl: './ui.html',
   styleUrl: './ui.css',
 })
-export class Ui {
+export class Ui implements OnDestroy {
   private readonly store = inject(Store);
   private readonly messageService = inject(MessageService);
+  private readonly destroy$ = new Subject<void>();
 
   constructor() {
     this.store
       .select(selectAcessToken)
       .pipe(
+        takeUntil(this.destroy$),
         tap((token) => {
           if (token) {
             this.messageService.connect(token);
@@ -31,5 +33,10 @@ export class Ui {
       .subscribe();
 
     this.store.dispatch(getPrincipalUser());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -23,6 +23,10 @@ export class MessageService {
     this.ws.connect(token);
   }
 
+  disconnect(): void {
+    this.ws.disconnect();
+  }
+
   listenToChat(chatId: number): Observable<Message> {
     return this.ws.subscribe(`/topic/rooms/${chatId}`);
   }
