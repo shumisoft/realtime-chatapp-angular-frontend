@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs';
-import { Message } from '../../../../core/models/message.model';
+import { combineLatest, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { Message, MessageStatus } from '../../../../core/models/message.model';
 import { MessageEventCommunicator } from '../../../../core/services/message-event-communicator/message-event-communicator';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { logout } from '../../../../core/store/auth/auth.actions';
@@ -16,11 +16,12 @@ import {
   selectHasMoreChatRooms,
   selectSelectedChatRoom,
 } from '../../../../core/store/chat-room/chat-room.selectors';
-import { incomingWsMessage } from '../../../../core/store/message/message.actions';
+import { incomingWsMessage, updateMessage } from '../../../../core/store/message/message.actions';
 import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
 import { ChatRoomCardComponent } from '../chat-room-card/chat-room-card.component';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { selectIsLoggedIn } from '../../../../core/store/auth/auth.selectors';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 
 @Component({
   selector: 'app-sidebar',
@@ -41,6 +42,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
   readonly isLoggedIn$ = this.store.select(selectIsLoggedIn);
+  readonly principalUser$ = this.store.select(selectPrincipleUser);
 
   rooms$ = this.store.select(selectChatRoomsSorted);
   loading$ = this.store.select(selectChatRoomLoading);
@@ -70,6 +72,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
                   this.store.dispatch(incomingWsMessage({ message: msg }));
                   this.store.dispatch(updateChatRoomLatestMessage({ message: msg }));
                   this.sendData(msg);
+
+                  // Mark as 'DELIVERED' if it's not my own message and it's 'SENT'
+                  this.principalUser$.pipe(take(1)).subscribe((principalUser) => {
+                    if (msg.userId !== principalUser.userId && msg.status === MessageStatus.SENT) {
+                      this.store.dispatch(
+                        updateMessage({ message: { ...msg, status: MessageStatus.DELIVERED } }),
+                      );
+                    }
+                  });
                 });
             }
           }

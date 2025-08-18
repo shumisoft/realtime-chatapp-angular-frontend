@@ -16,6 +16,7 @@ import {
   selectMessagesByChatId,
 } from '../../../../core/store/message/message.selectors';
 import { ChatCardComponent } from '../chat-card/chat-card.component';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 
 enum ScrollState {
   NONE,
@@ -36,6 +37,7 @@ export class ChatAreaComponent implements OnInit, AfterViewInit {
   private readonly messageEventCommunicator = inject(MessageEventCommunicator);
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
+  readonly principalUser$ = this.store.select(selectPrincipleUser);
   selectedChatRoomId!: number;
 
   messages$!: Observable<Message[]>;
@@ -223,12 +225,18 @@ export class ChatAreaComponent implements OnInit, AfterViewInit {
   }
 
   markRead(message: Message) {
-    this.messages$.pipe(take(1)).subscribe((messages) => {
-      for (const msg of messages) {
-        if (msg.status !== MessageStatus.READ && msg.timestamp <= message.timestamp) {
-          this.store.dispatch(updateMessage({ message: { ...msg, status: MessageStatus.READ } }));
+    this.principalUser$.pipe(take(1)).subscribe((principalUser) => {
+      this.messages$.pipe(take(1)).subscribe((messages) => {
+        for (const msg of messages) {
+          if (
+            msg.userId !== principalUser.userId && // Mark only recipient's messages
+            msg.status !== MessageStatus.READ &&
+            msg.timestamp <= message.timestamp
+          ) {
+            this.store.dispatch(updateMessage({ message: { ...msg, status: MessageStatus.READ } }));
+          }
         }
-      }
+      });
     });
   }
 }

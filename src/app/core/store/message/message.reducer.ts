@@ -79,7 +79,14 @@ export const messageReducer = createReducer(
 
   on(MessageActions.incomingWsMessage, (state, { message }) => {
     const list = state.messages[message.chatRoomId] || [];
-    if (list.some((m) => m.messageId === message.messageId)) return state;
+    if (list.some((m) => m.messageId === message.messageId)) return {
+        // Update existing message (status change, etc.)
+        ...state,
+        messages: {
+          ...state.messages,
+          [message.chatRoomId]: list.map((m) => (m.messageId === message.messageId ? message : m)),
+        },
+      };
 
     return {
       ...state,

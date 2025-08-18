@@ -21,6 +21,7 @@ import { selectPrincipleUser } from '../../../../core/store/principal-user/princ
 import { selectUserById, selectUserColor } from '../../../../core/store/users/users.selectors';
 import { Check, DoneAll, Schedule } from '../../../../shared/components/icons';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-chat-card',
@@ -68,13 +69,19 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.isDirectMessageRoom() && this.message.status !== MessageStatus.READ) {
-      this.observer = new IntersectionObserver(() => {
-        this.onRead.emit(true);
-      });
+    this.principalUser$.pipe(take(1)).subscribe((principalUser) => {
+      const isUnread = this.message.status !== MessageStatus.READ;
+      const isMyMessage = this.message.userId === principalUser.userId;
 
-      this.observer.observe(this.el.nativeElement);
-    }
+      // Only recipients should mark messages as read
+      if (this.isDirectMessageRoom() && !isMyMessage && isUnread) {
+        this.observer = new IntersectionObserver(() => {
+          this.onRead.emit(true);
+        });
+
+        this.observer.observe(this.el.nativeElement);
+      }
+    });
   }
 
   openViewer(imageUrl: string) {
