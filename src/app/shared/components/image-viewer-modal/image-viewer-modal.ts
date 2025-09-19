@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Close } from "../icons";
+import { Close } from '../icons';
 
 @Component({
   selector: 'app-image-viewer-modal',

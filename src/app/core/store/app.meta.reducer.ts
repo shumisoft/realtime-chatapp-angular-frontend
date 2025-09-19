@@ -1,6 +1,6 @@
 import { Action, ActionReducer, createAction } from '@ngrx/store';
 
-//action
+// Action
 export const clearAppState = createAction('[App] Clear App State');
 
 export function clearAppStateMetaReducer(reducer: ActionReducer<any>): ActionReducer<any> {

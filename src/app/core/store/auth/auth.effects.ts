@@ -55,8 +55,8 @@ export class AuthEffects {
       this.actions.pipe(
         ofType(loginSuccess),
         tap(({ data }) => {
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('refreshToken', data.refreshToken);
+          // localStorage.setItem('accessToken', data.accessToken);
+          // localStorage.setItem('refreshToken', data.refreshToken);
 
           this.toast.close('logging-in');
 
@@ -99,8 +99,8 @@ export class AuthEffects {
       this.actions.pipe(
         ofType(registerSuccess),
         tap(({ data }) => {
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('refreshToken', data.refreshToken);
+          // localStorage.setItem('accessToken', data.accessToken);
+          // localStorage.setItem('refreshToken', data.refreshToken);
 
           this.toast.close('registering');
 

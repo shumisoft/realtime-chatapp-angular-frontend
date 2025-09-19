@@ -1,8 +1,8 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { selectAcessToken } from '../../store/auth/auth.selectors';
 import { exhaustMap } from 'rxjs';
+import { selectAcessToken } from '../../store/auth/auth.selectors';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(Store);

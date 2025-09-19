@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Output, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
+import { User } from '../../../../core/models/user.models';
 import { UserService } from '../../../../core/services/user/user.service';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import { Search, Close } from '../../../../shared/components/icons';
-import { User } from '../../../../core/models/user.models';
+import { Close, Search } from '../../../../shared/components/icons';
 @Component({
   selector: 'app-new-group',
   standalone: true,

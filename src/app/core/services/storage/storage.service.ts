@@ -1,7 +1,7 @@
 import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { ENV_CONFIG } from '../../config/app.env.config';
 import { map, Observable, switchMap } from 'rxjs';
+import { ENV_CONFIG } from '../../config/app.env.config';
 import { PresignedUrlResponse } from '../../models/storage.models';
 
 @Injectable({

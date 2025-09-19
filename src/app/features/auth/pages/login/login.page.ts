@@ -3,8 +3,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { login } from '../../../../core/store/auth/auth.actions';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { login } from '../../../../core/store/auth/auth.actions';
 import { selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 
 @Component({
@@ -21,7 +21,10 @@ export class LoginPage {
 
   $loading = this.store.select(selectAuthLoading);
 
-  constructor(private readonly fb: FormBuilder, private readonly toast: HotToastService) {
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly toast: HotToastService,
+  ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],

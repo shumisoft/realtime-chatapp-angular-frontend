@@ -1,4 +1,3 @@
-import { MessageType } from './../../../../core/models/message.model';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -11,6 +10,7 @@ import {
   Output,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { take } from 'rxjs';
 import {
   ChatRoom,
   ChatRoomType,
@@ -21,7 +21,7 @@ import { selectPrincipleUser } from '../../../../core/store/principal-user/princ
 import { selectUserById, selectUserColor } from '../../../../core/store/users/users.selectors';
 import { Check, DoneAll, Schedule } from '../../../../shared/components/icons';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
-import { take } from 'rxjs';
+import { MessageType } from './../../../../core/models/message.model';
 
 @Component({
   selector: 'app-chat-card',

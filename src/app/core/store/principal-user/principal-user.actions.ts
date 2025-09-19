@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { EditUserRequest, User, UserState } from '../../models/user.models';
+import { EditUserRequest, UserState } from '../../models/user.models';
 
 export const getPrincipalUser = createAction('[User] Getting Principal User');
 export const getPrincipalUserSuccess = createAction(

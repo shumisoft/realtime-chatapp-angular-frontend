@@ -1,6 +1,6 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
-import { Observable, Subject, Subscription, interval } from 'rxjs';
+import { interval, Observable, Subject, Subscription } from 'rxjs';
 import SockJS from 'sockjs-client';
 import { ENV_CONFIG } from '../../config/app.env.config';
 

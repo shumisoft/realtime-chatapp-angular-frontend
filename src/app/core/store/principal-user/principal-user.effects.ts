@@ -1,5 +1,4 @@
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { catchError, exhaustMap, map, of, switchMap, takeUntil, tap } from 'rxjs';
@@ -17,7 +16,6 @@ import {
 export class UserEffects {
   private readonly actions = inject(Actions);
   private readonly userService = inject(UserService);
-  private readonly router = inject(Router);
   private readonly toast = inject(HotToastService);
 
   getPrincipalUser$ = createEffect(() =>
@@ -53,9 +51,8 @@ export class UserEffects {
     () =>
       this.actions.pipe(
         ofType(getPrincipalUserSuccess),
-        tap(({ data }) => {
+        tap(() => {
           this.toast.close('fetching-profile');
-          localStorage.setItem('principalUser', JSON.stringify(data));
         }),
       ),
     { dispatch: false },
@@ -85,8 +82,7 @@ export class UserEffects {
     () =>
       this.actions.pipe(
         ofType(updatePrincipalUserSuccess),
-        tap(({ data }) => {
-          localStorage.setItem('principalUser', JSON.stringify(data));
+        tap(() => {
           this.toast.success('Profile updated');
         }),
       ),

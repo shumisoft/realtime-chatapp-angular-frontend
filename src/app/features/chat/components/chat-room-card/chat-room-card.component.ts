@@ -1,15 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import { ChatRoom, ChatRoomType, MessageType } from '../../../../core/models/message.model';
 import { Store } from '@ngrx/store';
+import { combineLatest, map, Observable } from 'rxjs';
+import { ChatRoom, MessageType } from '../../../../core/models/message.model';
 import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
-import { CommonModule } from '@angular/common';
-import { UserState } from '../../../../core/models/user.models';
-import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
-import { combineLatest, map, Observable } from 'rxjs';
 import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { ChatRoomUtil } from '../../../../core/utils/chat-room.util';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 
 @Component({
   selector: 'app-chat-room-card',

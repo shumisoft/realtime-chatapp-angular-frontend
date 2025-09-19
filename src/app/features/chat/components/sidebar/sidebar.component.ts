@@ -6,6 +6,7 @@ import { Message, MessageStatus } from '../../../../core/models/message.model';
 import { MessageEventCommunicator } from '../../../../core/services/message-event-communicator/message-event-communicator';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { logout } from '../../../../core/store/auth/auth.actions';
+import { selectIsLoggedIn } from '../../../../core/store/auth/auth.selectors';
 import {
   loadMyChatRooms,
   updateChatRoomLatestMessage,
@@ -17,11 +18,10 @@ import {
   selectSelectedChatRoom,
 } from '../../../../core/store/chat-room/chat-room.selectors';
 import { incomingWsMessage, updateMessage } from '../../../../core/store/message/message.actions';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { ConfirmationDialog } from '../../../../shared/components/dialogs/confirmation-dialog/confirmation-dialog';
 import { ChatRoomCardComponent } from '../chat-room-card/chat-room-card.component';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
-import { selectIsLoggedIn } from '../../../../core/store/auth/auth.selectors';
-import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 
 @Component({
   selector: 'app-sidebar',

@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ChatRoom, CreateChatRoomRequest, PaginatedChatRooms } from '../../models/message.model';
 import { ENV_CONFIG } from '../../config/app.env.config';
+import { ChatRoom, CreateChatRoomRequest, PaginatedChatRooms } from '../../models/message.model';
 
 @Injectable({
   providedIn: 'root',

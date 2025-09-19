@@ -23,10 +23,10 @@ import {
   updateChatRoomFailure,
 } from './chat-room.actions';
 
-import { ChatRoom } from '../../models/message.model';
-import { upsertUser } from '../users/users.actions';
 import { Router } from '@angular/router';
+import { ChatRoom } from '../../models/message.model';
 import { logout } from '../auth/auth.actions';
+import { upsertUser } from '../users/users.actions';
 
 @Injectable()
 export class ChatRoomEffects {

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { ENV_CONFIG } from '../../config/app.env.config';
 import { Observable, of } from 'rxjs';
+import { ENV_CONFIG } from '../../config/app.env.config';
 import { OnlineStatusType, UserStatus, UserStatusResponse } from '../../models/user-status.model';
 
 @Injectable({

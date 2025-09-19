@@ -4,10 +4,10 @@ import { Store } from '@ngrx/store';
 import { take } from 'rxjs';
 import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { ChatAreaComponent } from '../chat-area/chat-area.component';
 import { ChatInputAreaComponent } from '../chat-input-area/chat-input-area.component';
 import { ChatMenuComponent } from '../chat-menu/chat-menu.component';
-import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 
 @Component({
   selector: 'app-main',

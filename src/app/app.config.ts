@@ -1,6 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
   isDevMode,
   provideBrowserGlobalErrorListeners,
@@ -14,7 +13,6 @@ import { appEffectsProviders } from './core/config/app.effects.config';
 import { appEnvProviders } from './core/config/app.env.config';
 import { appInterceptorProviders } from './core/config/app.interceptors.config';
 import { appStoreProviders } from './core/config/app.store.config';
-import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +24,6 @@ export const appConfig: ApplicationConfig = {
     ...appEffectsProviders,
     ...appEnvProviders,
     provideHotToastConfig(),
-    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
 };

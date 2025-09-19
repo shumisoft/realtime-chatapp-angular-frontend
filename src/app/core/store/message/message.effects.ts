@@ -1,11 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import * as MessageActions from './message.actions';
-import { catchError, map, mergeMap, withLatestFrom, of } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { catchError, map, mergeMap, of, withLatestFrom } from 'rxjs';
 import { MessageService } from '../../services/message/message.service';
+import * as MessageActions from './message.actions';
 import { selectChatMeta } from './message.selectors';
-import { MessageStatus } from '../../models/message.model';
 
 @Injectable()
 export class MessageEffects {

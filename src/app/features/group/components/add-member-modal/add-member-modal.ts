@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from '../../../../core/models/user.models';
+import { Close } from '../../../../shared/components/icons';
 import { UserSearch } from '../../../../shared/components/user-search/user-search';
-import { Close } from "../../../../shared/components/icons";
 
 @Component({
   selector: 'app-add-member-modal',

@@ -28,7 +28,7 @@ export const authGuard: CanActivateFn = (route, state) => {
    *   - "false" → block
    *   - "UrlTree" → redirect cleanly
    * Returning UrlTree is Angular’s recommended, cleanest method.
-   *
+   * O
    * ✔ 2. It avoids race conditions and double navigation
    * When you call "router.navigate(['/auth/login'])" inside a guard,
    * Angular already is in the middle of navigating.

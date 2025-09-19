@@ -7,9 +7,9 @@ import { messageReducer } from '../store/message/message.reducer';
 import { presenceReducer } from '../store/presence/presence.reducer';
 import { userReducer } from '../store/principal-user/principal-user.reducer';
 import { usersReducer } from '../store/users/users.reducer';
-import { hydrateAuthState } from './app.hydration.config';
+import { localStorageSyncReducer } from './app.storage.config';
 
-export const metaReducers: MetaReducer[] = [clearAppStateMetaReducer];
+export const metaReducers: MetaReducer[] = [clearAppStateMetaReducer, localStorageSyncReducer];
 
 export const appStoreProviders = [
   provideStore(
@@ -23,11 +23,6 @@ export const appStoreProviders = [
       presence: presenceReducer,
     },
     {
-      initialState: {
-        auth: hydrateAuthState(),
-        // 'principal-user': hydrateUserState(),
-        // chatRooms: hydrateChatRoomsState(),
-      },
       metaReducers,
     },
   ),

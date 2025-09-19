@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { userStartedTyping, userStoppedTyping, clearPresence } from './presence.actions';
+import { clearPresence, userStartedTyping, userStoppedTyping } from './presence.actions';
 
 export interface ChatActivity {
   typingUsers: Set<string>;
@@ -40,7 +40,7 @@ export const presenceReducer = createReducer(
     if (!current.has(userId)) return state;
 
     const updatedSet = new Set(current);
-    
+
     updatedSet.delete(userId);
 
     return {

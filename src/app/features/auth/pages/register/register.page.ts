@@ -27,7 +27,10 @@ export class RegisterPage {
 
   $loading = this.store.select(selectAuthLoading);
 
-  constructor(private fb: FormBuilder, private toast: HotToastService) {
+  constructor(
+    private fb: FormBuilder,
+    private toast: HotToastService,
+  ) {
     this.registerForm = this.fb.group(
       {
         fullName: ['', [Validators.required, Validators.minLength(3)]],
@@ -42,7 +45,7 @@ export class RegisterPage {
           const confirmPassword = form.get('confirmPassword')?.value;
           return password === confirmPassword ? null : { passwordMismatch: true };
         },
-      }
+      },
     );
   }
 

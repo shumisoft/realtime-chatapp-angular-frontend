@@ -6,11 +6,11 @@ import { debounceTime, Subject, takeUntil, tap } from 'rxjs';
 import { ChatRoom, MessageType, TypingEventDTO } from '../../../../core/models/message.model';
 import { UserState } from '../../../../core/models/user.models';
 import { MessageService } from '../../../../core/services/message/message.service';
+import { StorageService } from '../../../../core/services/storage/storage.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { AttachFile, Send } from '../../../../shared/components/icons';
 import { ImagePreview } from '../../../../shared/components/image-preview/image-preview';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
-import { StorageService } from '../../../../core/services/storage/storage.service';
 
 @Component({
   selector: 'app-chat-input-area',
@@ -65,19 +65,13 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   }
 
   onSend(): void {
-    console.log('upload');
-
     const trimmedContent = this.message.trim();
     if (!trimmedContent && !this.selectedImageFile) return;
-    console.log('upload');
 
     if (this.isUploading) return;
-    console.log('upload');
 
     const chatId = this.selectedchatroom?.chatId;
     if (!chatId) return;
-
-    console.log('upload');
 
     // SCENARIO 1: Image Upload (with or without text)
     if (this.selectedImageFile) {
@@ -204,7 +198,6 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
 
   openViewer() {
     this.isViewerOpen = true;
-    console.log('image clicked');
   }
 
   closeViewer() {

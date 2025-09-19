@@ -24,7 +24,10 @@
             class="text-error-500 text-xs mt-1"
           >
             Full name must be at least
-            {{registerForm.controls['fullName']?.errors?.['minlength']?.requiredLength}} characters.
+            {{
+              registerForm.controls['fullName']?.errors?.['minlength']?.requiredLength
+            }}
+            characters.
           </span>
         </p>
       </div>
@@ -50,7 +53,10 @@
             class="text-error-500 text-xs mt-1"
           >
             Username must be at least
-            {{registerForm.controls['username']?.errors?.['minlength']?.requiredLength}} characters.
+            {{
+              registerForm.controls['username']?.errors?.['minlength']?.requiredLength
+            }}
+            characters.
           </span>
         </p>
       </div>
@@ -101,15 +107,20 @@
             class="text-error-500 text-xs mt-1"
           >
             Password must be at least
-            {{registerForm.controls['password']?.errors?.['minlength']?.requiredLength}} characters
-            long.
+            {{
+              registerForm.controls['password']?.errors?.['minlength']?.requiredLength
+            }}
+            characters long.
           </span>
           <span
             *ngIf="registerForm.controls['password']?.errors?.['maxlength']"
             class="text-error-500 text-xs mt-1"
           >
             Password cannot exceed
-            {{registerForm.controls['password']?.errors?.['maxlength']?.requiredLength}} characters.
+            {{
+              registerForm.controls['password']?.errors?.['maxlength']?.requiredLength
+            }}
+            characters.
           </span>
         </p>
       </div>

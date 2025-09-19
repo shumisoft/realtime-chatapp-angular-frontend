@@ -3,15 +3,15 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, map, Observable, of, Subscription, switchMap, timer } from 'rxjs';
-import { ChatRoom, ChatRoomType } from '../../../../core/models/message.model';
+import { ChatRoom } from '../../../../core/models/message.model';
 import { OnlineStatusType, UserStatus } from '../../../../core/models/user-status.model';
 import { UserState } from '../../../../core/models/user.models';
 import { UserStatusService } from '../../../../core/services/user-status/user-status.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { selectTypingDisplayText } from '../../../../core/store/presence/presence.selectors';
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
-import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { ChatRoomUtil } from '../../../../core/utils/chat-room.util';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 
 @Component({
   selector: 'app-chat-menu',
@@ -74,8 +74,6 @@ export class ChatMenuComponent implements OnInit {
         }),
       )
       .subscribe((status) => {
-        console.log(status);
-
         this.userStatus = status;
       });
   }

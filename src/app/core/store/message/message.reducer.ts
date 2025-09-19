@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
+import { Message } from '../../models/message.model';
 import * as MessageActions from './message.actions';
-import { Message, MessageStatus } from '../../models/message.model';
 
 export interface ChatMessageMeta {
   page: number; // Next page to request
@@ -79,7 +79,8 @@ export const messageReducer = createReducer(
 
   on(MessageActions.incomingWsMessage, (state, { message }) => {
     const list = state.messages[message.chatRoomId] || [];
-    if (list.some((m) => m.messageId === message.messageId)) return {
+    if (list.some((m) => m.messageId === message.messageId))
+      return {
         // Update existing message (status change, etc.)
         ...state,
         messages: {

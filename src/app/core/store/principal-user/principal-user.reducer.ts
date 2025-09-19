@@ -1,5 +1,5 @@
-import { UserState } from '../../models/user.models';
 import { createReducer, on } from '@ngrx/store';
+import { UserState } from '../../models/user.models';
 import {
   getPrincipalUser,
   getPrincipalUserFailure,

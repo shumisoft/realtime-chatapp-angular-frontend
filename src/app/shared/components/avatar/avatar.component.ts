@@ -1,14 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-avatar',
   templateUrl: './avatar.component.html',
   styleUrls: ['./avatar.component.css'],
 })
-export class AvatarComponent implements OnInit {
+export class AvatarComponent {
   @Input() url!: string | null;
-
-  constructor() {}
-
-  ngOnInit() {}
 }

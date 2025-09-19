@@ -13,7 +13,7 @@ export const register = createAction('[Auth] Register', props<{ payload: Registe
 
 export const registerSuccess = createAction(
   '[Auth] Register Success',
-  props<{ data: LoginResponse }>()
+  props<{ data: LoginResponse }>(),
 );
 
 export const registerFailure = createAction('[Auth] Register Failure', props<{ error: string }>());
