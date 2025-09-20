@@ -4,7 +4,7 @@ export const environment: AppEnvironment = {
   production: true,
   gatewayUri: 'https://chatapp-be.dipanshushukla.com',
   urlMaps: {
-    'chatapp-be.ritwikrajsingh.com': 'https://ritwikrajsingh.com',
-    'chatapp-be.dipanshushukla.com': 'https://dipanshushukla.com',
+    'chatapp-fe.ritwikrajsingh.com': 'https://ritwikrajsingh.com',
+    'chatapp-fe.dipanshushukla.com': 'https://dipanshushukla.com',
   },
 };
