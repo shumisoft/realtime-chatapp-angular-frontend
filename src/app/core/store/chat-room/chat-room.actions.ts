@@ -40,12 +40,12 @@ export const loadChatRoomByIdFailure = createAction(
 // Create
 export const createChatRoom = createAction(
   '[ChatRoom] Create ChatRoom',
-  props<{ payload: CreateChatRoomRequest }>(),
+  props<{ payload: CreateChatRoomRequest; redirectOnSuccess?: boolean }>(),
 );
 
 export const createChatRoomSuccess = createAction(
   '[ChatRoom] Create ChatRoom Success',
-  props<{ data: ChatRoom }>(),
+  props<{ data: ChatRoom, shouldRedirect: boolean }>(),
 );
 
 export const createChatRoomFailure = createAction(

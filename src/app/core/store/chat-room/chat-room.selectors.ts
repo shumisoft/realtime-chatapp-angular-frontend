@@ -41,4 +41,4 @@ export const selectChatRoomCreating = createSelector(
 
 //Check if we've attempted to load a specific room
 export const selectChatRoomLoadAttempted = (chatId: number) =>
-  createSelector(selectChatRoomState, (state) => state.loadedChatIds.has(chatId));
+  createSelector(selectChatRoomState, (state) => !!state.loadedChatIds[chatId]);

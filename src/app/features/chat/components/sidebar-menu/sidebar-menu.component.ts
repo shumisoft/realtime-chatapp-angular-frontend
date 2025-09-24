@@ -98,7 +98,7 @@ export class SidebarMenuComponent implements OnInit {
       type: ChatRoomType.PRIVATE,
     };
 
-    this.store.dispatch(createChatRoom({ payload }));
+    this.store.dispatch(createChatRoom({ payload, redirectOnSuccess: false }));
 
     this.closeNewGroupModal();
   }
@@ -113,7 +113,7 @@ export class SidebarMenuComponent implements OnInit {
       memberIds: [user?.userId],
     };
 
-    this.store.dispatch(createChatRoom({ payload }));
+    this.store.dispatch(createChatRoom({ payload, redirectOnSuccess: false }));
 
     this.closeNewChatModal();
   }

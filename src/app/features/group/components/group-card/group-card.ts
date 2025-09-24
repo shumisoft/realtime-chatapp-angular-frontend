@@ -27,6 +27,7 @@ import {
   Visibility,
 } from '../../../../shared/components/icons';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   standalone: true,
@@ -52,6 +53,7 @@ import { ImageViewerModal } from '../../../../shared/components/image-viewer-mod
   styleUrl: './group-card.css',
 })
 export class GroupCard implements OnChanges {
+  private readonly toast = inject(HotToastService);
   private readonly storageService = inject(StorageService);
 
   @Input({ required: true }) group!: ChatRoom;
@@ -223,13 +225,24 @@ export class GroupCard implements OnChanges {
 
     this.isUploadingIcon = true;
 
+    // Show uploading toast
+    const uploadingToastId = 'group-icon-upload';
+    this.toast.loading('Uploading group icon...', { id: uploadingToastId });
+
     this.storageService.uploadFile(file).subscribe({
       next: (imageUrl) => {
         this.updateGroup.emit({ icon: imageUrl });
+
+        // Toast → success
+        this.toast.close(uploadingToastId);
+
         this.isUploadingIcon = false;
         this.isGroupIconMenuOpen = false;
       },
       error: () => {
+        // Toast → error
+        this.toast.close(uploadingToastId);
+        this.toast.error('Failed to upload group icon, please try again.');
         this.isUploadingIcon = false;
       },
     });

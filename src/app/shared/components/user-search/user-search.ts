@@ -7,25 +7,28 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
 import { User } from '../../../core/models/user.models';
 import { UserService } from '../../../core/services/user/user.service';
 import { AvatarComponent } from '../avatar/avatar.component';
-import { Search } from '../icons';
+import { AddComment, Search } from '../icons';
 
 @Component({
   selector: 'app-user-search',
-  imports: [AvatarComponent, Search],
+  imports: [AvatarComponent, Search, AddComment],
   templateUrl: './user-search.html',
   styleUrl: './user-search.css',
 })
 export class UserSearch {
   private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
 
   @Input() placeholder = 'Search user...';
   @Input() disabledUserIds: string[] = [];
 
   @Output() userSelected = new EventEmitter<User>();
+  @Output() profileSelected = new EventEmitter<User>();
 
   private searchSubject = new Subject<string>();
 
@@ -70,6 +73,14 @@ export class UserSearch {
 
   onUserClick(user: User) {
     if (this.isDisabled(user)) return;
+    this.router.navigate(['/user', user.username]);
+  }
+
+  onChatClick(user: User, event: MouseEvent) {
+    event.stopPropagation();
+
+    if (this.isDisabled(user)) return;
+
     this.userSelected.emit(user);
   }
 

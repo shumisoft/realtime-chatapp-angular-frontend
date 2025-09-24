@@ -29,7 +29,7 @@ export interface ChatRoomState {
 
   creating: boolean;
 
-  loadedChatIds: Set<number>;
+  loadedChatIds: Record<number, boolean>;
 }
 
 export const initialState: ChatRoomState = {
@@ -44,7 +44,7 @@ export const initialState: ChatRoomState = {
 
   creating: false,
 
-  loadedChatIds: new Set(), // ← fix for infinite requests on 404
+  loadedChatIds: {}, // ← fix for infinite requests on 404
 };
 
 export const chatRoomReducer = createReducer(
@@ -76,7 +76,7 @@ export const chatRoomReducer = createReducer(
     ...state,
     loading: true,
     error: null,
-    loadedChatIds: new Set([...state.loadedChatIds, chatId]), // ← Mark as attempted
+    loadedChatIds: { ...state.loadedChatIds, [chatId]: true }, // ← Mark as attempted
   })),
 
   on(loadChatRoomByIdSuccess, (state, { data }) => {

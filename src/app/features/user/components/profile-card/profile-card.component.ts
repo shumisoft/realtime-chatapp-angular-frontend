@@ -24,9 +24,12 @@ import {
   Logout,
   Upload,
   Visibility,
+  AddComment,
 } from '../../../../shared/components/icons';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
 import { EditUserRequest } from './../../../../core/models/user.models';
+import { ChatRoomType, CreateChatRoomRequest } from '../../../../core/models/message.model';
+import { createChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 
 @Component({
   selector: 'app-profile-card',
@@ -42,6 +45,7 @@ import { EditUserRequest } from './../../../../core/models/user.models';
     Visibility,
     Upload,
     FolderOpen,
+    AddComment,
   ],
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.css'],
@@ -140,6 +144,10 @@ export class ProfileCardComponent implements OnInit {
 
     this.isUploadingAvatar = true;
 
+    // Show uploading toast
+    const uploadingToastId = 'avatar-upload';
+    this.toast.loading('Uploading avatar...', { id: uploadingToastId });
+
     this.storageService.uploadFile(file).subscribe({
       next: (imageUrl) => {
         this.store.dispatch(
@@ -147,11 +155,17 @@ export class ProfileCardComponent implements OnInit {
             payload: { ...user, avatar: imageUrl },
           }),
         );
+        // Toast → success
+        this.toast.close(uploadingToastId);
 
         this.isUploadingAvatar = false;
         this.isAvatarMenuOpen = false;
       },
       error: () => {
+        // Toast → error
+        this.toast.close(uploadingToastId);
+        this.toast.error('Failed to upload avatar, please try again.');
+
         this.isUploadingAvatar = false;
       },
     });
@@ -171,5 +185,20 @@ export class ProfileCardComponent implements OnInit {
 
   onLogout(): void {
     this.logout.emit();
+  }
+
+  onChatClick(user: User, event: MouseEvent) {
+    event.stopPropagation();
+
+    if (!user?.userId) return;
+
+    const payload: CreateChatRoomRequest = {
+      type: ChatRoomType.DIRECT_MESSAGE,
+      name: 'dm-name-placeholder', // backend requirement
+      description: 'dm-description-laceholder', // backend requirement
+      memberIds: [user?.userId],
+    };
+
+    this.store.dispatch(createChatRoom({ payload, redirectOnSuccess: true }));
   }
 }

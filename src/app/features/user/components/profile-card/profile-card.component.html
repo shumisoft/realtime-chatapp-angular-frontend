@@ -102,6 +102,16 @@
             }
           </div>
         </div>
+
+        @if (!isPrincipalUser) {
+          <button
+            class="text-gray-500 hover:text-green-600 cursor-pointer"
+            (click)="onChatClick(user, $event)"
+            title="Start Chat"
+          >
+            <icon-add-comment size="2.4rem" />
+          </button>
+        }
       </div>
 
       <!-- Full Name Field -->

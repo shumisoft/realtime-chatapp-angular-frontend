@@ -118,18 +118,30 @@ export class ChatRoomEffects {
   createRoom$ = createEffect(() =>
     this.actions$.pipe(
       ofType(createChatRoom),
-      mergeMap(({ payload }) => {
-        this.toast.loading('Creating chat room', { id: 'create-room' }); // 🟡 instant feedback
+      mergeMap(({ payload, redirectOnSuccess }) => {
+        this.toast.loading('Opening chat...', { id: 'create-room' });
 
         return this.chatService.create(payload).pipe(
           mergeMap((data: ChatRoom) => {
             this.toast.close('create-room');
-            this.toast.success('Chat room created!');
+            // this.toast.success('Chat room created!');
+
+            const wasCreated = data.createdAt
+              ? new Date().getTime() - new Date(data.createdAt).getTime() < 5000
+              : false;
+
+            // ✅ Show appropriate toast
+            if (wasCreated) {
+              this.toast.success('Chat room created!');
+            }
 
             const users = this.extractUsersFromRoom(data);
 
             return [
-              createChatRoomSuccess({ data }),
+              createChatRoomSuccess({
+                data,
+                shouldRedirect: redirectOnSuccess || false,
+              }),
               selectChatRoom({ chatId: data.chatId }), // auto-select new chat-room
               ...users.map((u) => upsertUser({ user: u })),
             ];
@@ -146,6 +158,17 @@ export class ChatRoomEffects {
         );
       }),
     ),
+  );
+
+  createChatRoomSuccessNavigation$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(createChatRoomSuccess),
+        tap(({ shouldRedirect }) => {
+          if (shouldRedirect) this.router.navigate(['/']);
+        }),
+      ),
+    { dispatch: false },
   );
 
   // /** Update room + upsert all users */
