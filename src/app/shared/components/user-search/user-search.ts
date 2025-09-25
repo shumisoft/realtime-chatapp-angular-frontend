@@ -12,11 +12,11 @@ import { debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs
 import { User } from '../../../core/models/user.models';
 import { UserService } from '../../../core/services/user/user.service';
 import { AvatarComponent } from '../avatar/avatar.component';
-import { AddComment, Search } from '../icons';
+import { Chat, Search } from '../icons';
 
 @Component({
   selector: 'app-user-search',
-  imports: [AvatarComponent, Search, AddComment],
+  imports: [AvatarComponent, Search, Chat],
   templateUrl: './user-search.html',
   styleUrl: './user-search.css',
 })

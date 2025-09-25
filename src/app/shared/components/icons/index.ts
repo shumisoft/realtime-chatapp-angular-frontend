@@ -25,6 +25,8 @@ export { AddPhotoAlternate } from './add-photo-alternate/add-photo-alternate';
 
 export { AttachFile } from './attach-file/attach-file';
 
+export { Chat } from './chat/chat';
+
 export { ChatAddOn } from './chat-add-on/chat-add-on';
 
 export { Check } from './check/check';

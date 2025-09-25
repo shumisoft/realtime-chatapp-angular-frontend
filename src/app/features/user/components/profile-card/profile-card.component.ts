@@ -13,23 +13,15 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { map, Observable } from 'rxjs';
+import { ChatRoomType, CreateChatRoomRequest } from '../../../../core/models/message.model';
 import { User } from '../../../../core/models/user.models';
 import { StorageService } from '../../../../core/services/storage/storage.service';
+import { createChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { updatePrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import {
-  Check,
-  Edit,
-  FolderOpen,
-  Logout,
-  Upload,
-  Visibility,
-  AddComment,
-} from '../../../../shared/components/icons';
+import { Chat, Check, Edit, FolderOpen, Logout, Upload, Visibility } from '../../../../shared/components/icons';
 import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
 import { EditUserRequest } from './../../../../core/models/user.models';
-import { ChatRoomType, CreateChatRoomRequest } from '../../../../core/models/message.model';
-import { createChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 
 @Component({
   selector: 'app-profile-card',
@@ -45,8 +37,8 @@ import { createChatRoom } from '../../../../core/store/chat-room/chat-room.actio
     Visibility,
     Upload,
     FolderOpen,
-    AddComment,
-  ],
+    Chat
+],
   templateUrl: './profile-card.component.html',
   styleUrls: ['./profile-card.component.css'],
 })
