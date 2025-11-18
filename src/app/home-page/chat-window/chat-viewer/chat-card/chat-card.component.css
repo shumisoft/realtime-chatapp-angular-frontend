@@ -1,0 +1,18 @@
+.outer-container{
+  max-width: 72%;
+  margin: 1em 0px;
+  padding: .8em 12px;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+}
+
+.left-bubble{
+  margin-right: auto;
+  background-color: white;
+}
+
+.right-bubble{
+  margin-left: auto;
+  background-color: var(--right-bubble-color);
+  color: white;
+}

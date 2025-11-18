@@ -1,0 +1,35 @@
+.outer-container{
+  height: 60px;
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-room-img{
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  margin-left: 16px;
+}
+
+.ellipsis{
+  font-size: 1.27em;
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+.chat-room-info{
+  margin-left: 16px;
+}
+
+.room-name{
+  font-size: 1.16em;
+  margin-bottom: 2px;
+}
+
+.lastseen{
+  font-size: .8em;
+  color: gray;
+  margin-bottom: 4px;
+}

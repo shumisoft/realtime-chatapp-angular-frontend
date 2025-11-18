@@ -1,0 +1,16 @@
+.outer-container{
+ display: flex;
+ flex-direction: column;
+}
+
+app-sidebar-header{
+  height: 60px;
+  width: 100%;
+  background-color: var(--primary);
+  position: sticky;
+}
+
+app-chat-rooms-viewer{
+  height: 100%;
+  width: 100%;
+}

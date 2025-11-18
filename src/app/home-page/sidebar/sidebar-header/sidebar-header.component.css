@@ -1,0 +1,27 @@
+.outer-container{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-profile-img{
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  margin: auto;
+  margin-left: 16px;
+}
+
+i{
+  margin-right: 33px;
+}
+
+.elipsis{
+  font-size: 1.27em;
+}
+
+.user-plus{
+  font-size: 1.1em;
+}

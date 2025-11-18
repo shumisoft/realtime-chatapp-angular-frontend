@@ -1,0 +1,47 @@
+.outer-container{
+  height: 80px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(211, 211, 211, 0.543);
+}
+
+.outer-container:hover{
+  background-color: whitesmoke;
+}
+
+.chat-room-avatar{
+  height: 50px;
+  width: 50px;
+  border-radius: 100%;
+  margin: 16px 10px;
+}
+
+.room-info{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  margin-right: auto;
+  width: calc(100% - 88px);
+  height: 70px;
+}
+
+.room-name{
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.recent-msg{
+  font-size: .96em;
+  color: gray;
+  width: calc(100%);
+  height: 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  margin-bottom: 4px;
+}
+
