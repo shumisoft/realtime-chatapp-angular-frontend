@@ -1,7 +1,7 @@
 @font-face {
   font-family: SFPRO;
   src: url("assets/fonts/sf-pro-display/SFPRODISPLAYREGULAR.OTF"),
-  url("assets/fonts/sf-pro-display/SFPRODISPLAYBOLD.OTF");
+    url("assets/fonts/sf-pro-display/SFPRODISPLAYBOLD.OTF");
   format: "opentype";
 }
 
@@ -10,8 +10,12 @@
   --right-bubble-color: rgb(46, 155, 227);
 }
 
-*{
+* {
   margin: 0;
   padding: 0;
-  font-family: SFPRO
+  font-family: SFPRO;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
