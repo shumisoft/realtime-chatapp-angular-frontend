@@ -41,7 +41,8 @@
       <button
         type="submit"
         class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-md transition-colors font-medium"
-        [disabled]="loginForm.invalid"
+        [ngClass]="{ 'animate-pulse': $loading | async }"
+        [disabled]="loginForm.invalid || ($loading | async)"
       >
         Login
       </button>

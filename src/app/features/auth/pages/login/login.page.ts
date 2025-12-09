@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { login } from '../../../../core/store/auth/auth.actions';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 
 @Component({
   standalone: true,
@@ -15,7 +17,11 @@ import { login } from '../../../../core/store/auth/auth.actions';
 export class LoginPage {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private store: Store) {
+  store = inject(Store);
+
+  $loading = this.store.select(selectAuthLoading);
+
+  constructor(private fb: FormBuilder, private toast: HotToastService) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
@@ -24,8 +30,7 @@ export class LoginPage {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      // alert(`Login Sucessful!!\n ${this.loginForm.value}`);
-
+      this.toast.loading('Logging in', { id: 'logging-in' });
       this.store.dispatch(login({ credentials: this.loginForm.value }));
     }
   }

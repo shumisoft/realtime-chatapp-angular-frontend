@@ -5,6 +5,6 @@ export const selectAuthState = createFeatureSelector<AuthState>('auth');
 
 export const selectAcessToken = createSelector(selectAuthState, (state) => state.accessToken);
 
-export const selectLoginLoading = createSelector(selectAuthState, (state) => state.loading);
+export const selectAuthLoading = createSelector(selectAuthState, (state) => state.loading);
 
 export const selectIsLoggedIn = createSelector(selectAuthState, (state) => !!state.accessToken);
