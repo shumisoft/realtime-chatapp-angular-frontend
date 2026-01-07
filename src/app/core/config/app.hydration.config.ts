@@ -9,3 +9,13 @@ export function hydrateAuthState() {
     error: null,
   };
 }
+
+export function hydrateUserState() {
+  const principalUser = JSON.parse(localStorage.getItem('principalUser') ?? '{}');
+
+  return {
+    ...principalUser,
+    loading: false,
+    error: null,
+  };
+}

@@ -3,6 +3,8 @@
 @import 'tailwindcss';
 
 @theme {
+  --color-top-bar: #caf0ee;
+  --color-right-bubble: #2e9be3;
   /* Brand colors (OKLCH for best vibrancy + contrast) */
   --color-primary-500: oklch(0.59 0.21 264); /* Royal Indigo */
   --color-primary-600: oklch(0.53 0.2 264);
@@ -41,4 +43,16 @@ button:disabled {
   background: var(--color-disabled-bg);
   color: var(--color-disabled-text);
   transition: all 0.2s ease-in-out; /* smooth disable */
+}
+
+.outer-container {
+  @apply max-w-[72%] mb-4 px-3 py-2 border border-gray-300 rounded-lg;
+}
+
+.left-bubble {
+  @apply mr-auto bg-white;
+}
+
+.right-bubble {
+  @apply ml-auto bg-right-bubble text-white;
 }

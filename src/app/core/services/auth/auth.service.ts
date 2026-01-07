@@ -7,8 +7,8 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AuthService {
-  private http = inject(HttpClient);
-  private authGateway = 'http://192.168.1.36:5421/auth';
+  private readonly http = inject(HttpClient);
+  private readonly authGateway = 'http://192.168.1.36:5421/auth';
 
   login(payload: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.authGateway}/login`, payload);

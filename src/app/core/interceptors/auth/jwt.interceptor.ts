@@ -27,6 +27,4 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
       return next(authReq);
     })
   );
-
-  return next(req);
 };

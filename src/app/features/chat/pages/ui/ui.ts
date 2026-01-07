@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { UserComponent } from '../../components/user/user.component';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { MainComponent } from '../../components/main/main.component';
 
 @Component({
   selector: 'app-ui',
   standalone: true,
-  imports: [UserComponent],
+  imports: [SidebarComponent, MainComponent],
   templateUrl: './ui.html',
   styleUrl: './ui.css',
 })

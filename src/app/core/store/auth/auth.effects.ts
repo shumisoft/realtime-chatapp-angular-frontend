@@ -15,13 +15,13 @@ import {
 } from './auth.actions';
 
 export class AuthEffects {
-  private actions$ = inject(Actions);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private toast = inject(HotToastService);
+  private readonly actions = inject(Actions);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toast = inject(HotToastService);
 
   login$ = createEffect(() =>
-    this.actions$.pipe(
+    this.actions.pipe(
       ofType(login),
       exhaustMap(({ credentials }) =>
         this.authService.login(credentials).pipe(
@@ -32,7 +32,7 @@ export class AuthEffects {
             if (err.status === 0) {
               this.toast.error("Can't reach server, please try again later");
 
-              return of(registerFailure({ error: 'Network error: server unreachable' }));
+              return of(loginFailure({ error: 'Network error: server unreachable' }));
             }
 
             const error = err?.error?.message || 'Login failed';
@@ -48,7 +48,7 @@ export class AuthEffects {
 
   loginSuccess$ = createEffect(
     () =>
-      this.actions$.pipe(
+      this.actions.pipe(
         ofType(loginSuccess),
         tap(({ data }) => {
           localStorage.setItem('accessToken', data.accessToken);
@@ -58,14 +58,14 @@ export class AuthEffects {
 
           this.toast.success('Login successful!');
 
-          this.router.navigate(['/chat']);
+          this.router.navigate(['/']);
         })
       ),
     { dispatch: false }
   );
 
   register$ = createEffect(() =>
-    this.actions$.pipe(
+    this.actions.pipe(
       ofType(register),
       exhaustMap(({ payload }) =>
         this.authService.register(payload).pipe(
@@ -92,7 +92,7 @@ export class AuthEffects {
 
   registerSuccess$ = createEffect(
     () =>
-      this.actions$.pipe(
+      this.actions.pipe(
         ofType(registerSuccess),
         tap(({ data }) => {
           localStorage.setItem('accessToken', data.accessToken);
@@ -102,7 +102,7 @@ export class AuthEffects {
 
           this.toast.success('Registration successful!');
 
-          this.router.navigate(['/chat']);
+          this.router.navigate(['/']);
         })
       ),
     { dispatch: false }

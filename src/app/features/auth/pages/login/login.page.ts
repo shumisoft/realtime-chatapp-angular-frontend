@@ -21,7 +21,7 @@ export class LoginPage {
 
   $loading = this.store.select(selectAuthLoading);
 
-  constructor(private fb: FormBuilder, private toast: HotToastService) {
+  constructor(private readonly fb: FormBuilder, private readonly toast: HotToastService) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
