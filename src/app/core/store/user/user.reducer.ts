@@ -1,6 +1,13 @@
 import { UserState } from '../../models/user.models';
 import { createReducer, on } from '@ngrx/store';
-import { getPrincipalUser, getPrincipalUserFailure, getPrincipalUserSuccess } from './user.actions';
+import {
+  getPrincipalUser,
+  getPrincipalUserFailure,
+  getPrincipalUserSuccess,
+  updatePrincipalUser,
+  updatePrincipalUserFailure,
+  updatePrincipalUserSuccess,
+} from './user.actions';
 
 export const initialState: UserState = {
   userId: null,
@@ -39,5 +46,29 @@ export const userReducer = createReducer(
     ...state,
     loading: false,
     error: payload.error,
-  }))
+  })),
+
+  on(updatePrincipalUser, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+
+  on(updatePrincipalUserSuccess, (state, { data }) => ({
+    ...state,
+    userId: data.userId,
+    username: data.username,
+    email: data.email,
+    fullName: data.fullName,
+    avatar: data.avatar,
+    bio: data.bio,
+    loading: false,
+    error: null,
+  })),
+
+  on(updatePrincipalUserFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
 );

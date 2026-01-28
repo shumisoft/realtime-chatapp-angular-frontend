@@ -5,7 +5,7 @@ import { userReducer } from '../store/user/user.reducer';
 
 export const appStoreProviders = [
   provideStore(
-    { auth: authReducer, user: userReducer },
-    { initialState: { auth: hydrateAuthState(), user: hydrateUserState() } }
+    { auth: authReducer, 'principal-user': userReducer },
+    { initialState: { auth: hydrateAuthState(), 'principal-user': hydrateUserState() } }
   ),
 ];

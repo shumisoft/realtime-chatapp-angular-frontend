@@ -56,3 +56,7 @@ button:disabled {
 .right-bubble {
   @apply ml-auto bg-right-bubble text-white;
 }
+
+.items-first-baseline {
+  align-items: first baseline;
+}

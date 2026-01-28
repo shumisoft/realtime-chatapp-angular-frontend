@@ -10,8 +10,8 @@ export interface UserState {
 }
 
 export interface EditUserRequest {
-  email: string;
-  fullName: string;
+  email: string | null;
+  fullName: string | null;
   avatar: string | null;
   bio: string | null;
 }

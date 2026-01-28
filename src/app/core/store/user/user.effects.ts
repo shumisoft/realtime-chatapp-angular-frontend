@@ -3,8 +3,15 @@ import { UserService } from '../../services/user/user.service';
 import { Router } from '@angular/router';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { inject } from '@angular/core';
-import { getPrincipalUser, getPrincipalUserFailure, getPrincipalUserSuccess } from './user.actions';
-import { catchError, exhaustMap, map, of, tap } from 'rxjs';
+import {
+  getPrincipalUser,
+  getPrincipalUserFailure,
+  getPrincipalUserSuccess,
+  updatePrincipalUser,
+  updatePrincipalUserSuccess,
+  updatePrincipalUserFailure,
+} from './user.actions';
+import { catchError, exhaustMap, map, of, switchMap, tap } from 'rxjs';
 
 export class UserEffects {
   private readonly actions = inject(Actions);
@@ -32,10 +39,10 @@ export class UserEffects {
             this.toast.error(error);
 
             return of(getPrincipalUserFailure({ error }));
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   getPrincipalUserSuccess$ = createEffect(
@@ -45,8 +52,38 @@ export class UserEffects {
         tap(({ data }) => {
           this.toast.close('fetching-profile');
           localStorage.setItem('principalUser', JSON.stringify(data));
-        })
+        }),
       ),
-    { dispatch: false }
+    { dispatch: false },
+  );
+
+  updatePrincipalUser$ = createEffect(() =>
+    this.actions.pipe(
+      ofType(updatePrincipalUser),
+      switchMap(({ payload }) =>
+        this.userService.updatePrincipalUser(payload).pipe(
+          map((data) => updatePrincipalUserSuccess({ data })),
+          catchError((err) => {
+            const error = err?.error?.message || 'Failed to update profile';
+            console.log(err);
+
+            this.toast.error(error);
+            return of(updatePrincipalUserFailure({ error }));
+          }),
+        ),
+      ),
+    ),
+  );
+
+  updatePrincipalUserSuccess$ = createEffect(
+    () =>
+      this.actions.pipe(
+        ofType(updatePrincipalUserSuccess),
+        tap(({ data }) => {
+          localStorage.setItem('principalUser', JSON.stringify(data));
+          this.toast.success('Profile updated');
+        }),
+      ),
+    { dispatch: false },
   );
 }

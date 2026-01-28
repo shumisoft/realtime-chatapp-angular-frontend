@@ -8,7 +8,7 @@ import { EditUserRequest, UserDTOResponse } from '../../models/user.models';
 })
 export class UserService {
   private readonly http = inject(HttpClient);
-  private readonly userGateway = 'http://192.168.1.36:5421/users';
+  private readonly userGateway = 'http://localhost:5421/users';
 
   getPrincipalUser(): Observable<UserDTOResponse> {
     return this.http.get<UserDTOResponse>(`${this.userGateway}/me`);
