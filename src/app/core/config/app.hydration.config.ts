@@ -19,3 +19,13 @@ export function hydrateUserState() {
     error: null,
   };
 }
+
+export function hydrateChatRoomsState() {
+  const principalUser = JSON.parse('{}');
+
+  return {
+    ...principalUser,
+    loading: false,
+    error: null,
+  };
+}

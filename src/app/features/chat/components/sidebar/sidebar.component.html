@@ -1,8 +1,9 @@
 <div class="flex flex-col w-full h-full border-r border-gray-300">
   <app-sidebar-menu />
   <div class="h-full overflow-scroll">
-    @for (item of [0, 1, 2, 3, 4,1,1,1,1,1,1,1,1,1,1,1,1,1]; track item) {
-    <app-chat-room-card />
+    <!-- {{ rooms$ | async | json }} -->
+    @for (room of rooms$ | async; track room.chatId) {
+      <app-chat-room-card [chatroom]="room" />
     }
   </div>
 </div>

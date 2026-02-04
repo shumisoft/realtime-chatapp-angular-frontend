@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
+import { ChatRoom } from '../../../../core/models/chat-room.model';
+import { Store } from '@ngrx/store';
+import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 
 @Component({
   selector: 'app-chat-room-card',
@@ -8,7 +11,14 @@ import { AvatarComponent } from '../../../../shared/components/avatar/avatar.com
   imports: [AvatarComponent],
 })
 export class ChatRoomCardComponent implements OnInit {
+  private readonly store = inject(Store);
+
+  @Input() chatroom!: ChatRoom;
   constructor() {}
 
   ngOnInit() {}
+
+  openChat() {
+    this.store.dispatch(selectChatRoom({ chatId: this.chatroom.chatId }));
+  }
 }
