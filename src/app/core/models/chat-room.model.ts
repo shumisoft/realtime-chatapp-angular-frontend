@@ -32,3 +32,12 @@ export interface PaginatedChatRooms {
   number: number;
   last: boolean;
 }
+
+export interface PaginatedMessages {
+  content: Message[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  last: boolean;
+}

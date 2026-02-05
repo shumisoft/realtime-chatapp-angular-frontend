@@ -50,11 +50,11 @@ button:disabled {
 }
 
 .left-bubble {
-  @apply mr-auto bg-white;
+  @apply mr-auto ml-0 bg-white;
 }
 
 .right-bubble {
-  @apply ml-auto bg-right-bubble text-white;
+  @apply ml-auto mr-0 bg-right-bubble text-white;
 }
 
 .items-first-baseline {

@@ -10,6 +10,8 @@ export class WebsocketService {
   private client!: Client;
   private connected = false;
 
+  private pendingSubscriptions: { topic: string; subject: Subject<any> }[] = [];
+
   private readonly baseUrl = 'http://localhost:5421';
 
   constructor() {}
@@ -25,17 +27,23 @@ export class WebsocketService {
 
       debug: (msg) => console.log('STOMP:', msg),
 
-      onConnect: (frame) => {
+      onConnect: () => {
         this.connected = true;
-        console.log('🟢 STOMP CONNECTED', frame);
+
+        // Restore all pending subscriptions
+        for (const sub of this.pendingSubscriptions) {
+          this.client.subscribe(sub.topic, (msg: IMessage) =>
+            sub.subject.next(JSON.parse(msg.body)),
+          );
+        }
       },
 
       onStompError: (frame) => {
-        console.error('🔴 STOMP ERROR', frame);
+        console.error('STOMP ERROR', frame);
       },
 
-      onWebSocketClose: (evt) => {
-        console.warn('🟡 STOMP CLOSED', evt);
+      onWebSocketClose: () => {
+        console.warn('WS CLOSED');
         this.connected = false;
       },
     });
@@ -43,18 +51,22 @@ export class WebsocketService {
     this.client.activate();
   }
 
-  subscribe(topic: string): Observable<any> {
-    const subject = new Subject<any>();
-    this.client.onConnect = () => {
+  subscribe<T>(topic: string): Observable<T> {
+    const subject = new Subject<T>();
+
+    if (this.connected) {
       this.client.subscribe(topic, (msg: IMessage) => {
         subject.next(JSON.parse(msg.body));
       });
-    };
+    } else {
+      // store for later subscription when connection is ready
+      this.pendingSubscriptions.push({ topic, subject });
+    }
 
     return subject.asObservable();
   }
 
-  publish(destination: string, body: any) {
+  publish(destination: string, body: any): void {
     if (!this.connected) return;
 
     this.client.publish({

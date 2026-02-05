@@ -1,9 +1,10 @@
-<div class="left-bubble outer-container">
-  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa obcaecati in laboriosam dolor
-  quasi expedita placeat laborum earum quisquam fugit?
-</div>
-
-<div class="right-bubble outer-container">
-  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Culpa obcaecati in laboriosam dolor
-  quasi expedita placeat laborum earum quisquam fugit?
+<div
+  class="left-bubble outer-container"
+  [class.right-bubble]="message.userId === (principalUser$ | async)?.userId"
+>
+  <p class="text-xs">{{ message.userId }}</p>
+  <p>{{ message.content }}</p>
+  <div class="flex">
+    <p class="ml-auto text-xs">{{ message.timestamp | date }}</p>
+  </div>
 </div>
