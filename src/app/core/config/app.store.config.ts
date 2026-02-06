@@ -16,7 +16,7 @@ export const appStoreProviders = [
     {
       initialState: {
         auth: hydrateAuthState(),
-        'principal-user': hydrateUserState(),
+        // 'principal-user': hydrateUserState(),
         // chatRooms: hydrateChatRoomsState(),
       },
     },

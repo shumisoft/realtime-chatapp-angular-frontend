@@ -12,6 +12,7 @@ import {
   updatePrincipalUserFailure,
 } from './user.actions';
 import { catchError, exhaustMap, map, of, switchMap, tap } from 'rxjs';
+import { UserState } from '../../models/user.models';
 
 export class UserEffects {
   private readonly actions = inject(Actions);
@@ -24,7 +25,11 @@ export class UserEffects {
       ofType(getPrincipalUser),
       exhaustMap(() =>
         this.userService.getPrincipalUser().pipe(
-          map((data) => getPrincipalUserSuccess({ data })),
+          map((data) => {
+            console.log(data);
+
+            return getPrincipalUserSuccess({ data: { ...data, loading: false, error: null } });
+          }),
           catchError((err) => {
             this.toast.close('fetching-profile');
 
@@ -62,7 +67,9 @@ export class UserEffects {
       ofType(updatePrincipalUser),
       switchMap(({ payload }) =>
         this.userService.updatePrincipalUser(payload).pipe(
-          map((data) => updatePrincipalUserSuccess({ data })),
+          map((data) =>
+            updatePrincipalUserSuccess({ data: { ...data, loading: false, error: null } }),
+          ),
           catchError((err) => {
             const error = err?.error?.message || 'Failed to update profile';
             console.log(err);

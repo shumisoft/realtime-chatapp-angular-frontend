@@ -5,7 +5,7 @@ import { HotToastService } from '@ngxpert/hot-toast';
 import { getPrincipalUser } from '../../../../core/store/user/user.actions';
 import { selectPrincipleUser } from '../../../../core/store/user/user.selectors';
 import { ProfileCardComponent } from '../../components/profile-card/profile-card.component';
-import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { UserDTOResponse } from '../../../../core/models/user.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../core/services/user/user.service';
@@ -26,29 +26,40 @@ export class Ui {
 
   readonly loading$ = this.store.select(selectAuthLoading);
 
-  readonly principalUser = this.store.select(selectPrincipleUser);
+  readonly principalUser$ = this.store.select(selectPrincipleUser);
 
-  userId$!: Observable<string | null>;
+  username$!: Observable<string | null>;
   readonly userData$!: Observable<UserDTOResponse | null>;
-  isPrincipalUser = false;
+  isPrincipleUser = false;
+  private username!: string | null;
 
   constructor() {
     this.toast.loading('Fetching Profile', { id: 'fetching-profile' });
-    this.userData$ = this.route.paramMap.pipe(
-      switchMap(async (params) => params.get('userId')),
-      switchMap((userId) => {
-        console.log(userId);
+    this.principalUser$.pipe(take(1)).subscribe((user) => {
+      if (!user?.userId) {
+        this.store.dispatch(getPrincipalUser());
+      }
+    });
 
-        if (userId === 'me') {
-          this.store.dispatch(getPrincipalUser());
-          this.isPrincipalUser = true;
-          return this.principalUser.pipe(
-            tap(() => this.toast.close('fetching-profile')),
-            map((user) => user as unknown as UserDTOResponse),
-          );
+    this.route.paramMap
+      .pipe(
+        switchMap(async (params) => params.get('username')),
+        tap((username) => (this.username = username)),
+      )
+      .subscribe();
+
+    this.userData$ = this.principalUser$.pipe(
+      switchMap((principleUser) => {
+        if (this.username === principleUser.username) {
+          this.router.navigate(['..', 'me'], { relativeTo: this.route });
         }
-        if (userId) {
-          return this.userService.getUserById(userId).pipe(
+        if (this.username === 'me') {
+          this.isPrincipleUser = true;
+          this.toast.close('fetching-profile');
+          return of(principleUser as unknown as UserDTOResponse);
+        }
+        if (this.username) {
+          return this.userService.getUserById(this.username).pipe(
             tap(() => this.toast.close('fetching-profile')),
             catchError((err) => {
               this.toast.close('fetching-profile');

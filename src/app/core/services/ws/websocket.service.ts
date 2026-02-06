@@ -55,7 +55,7 @@ export class WebsocketService {
     const subject = new Subject<T>();
 
     if (this.connected) {
-      this.client.subscribe(topic, (msg: IMessage) => {
+      this.client.subscribe(`${topic}`, (msg: IMessage) => {
         subject.next(JSON.parse(msg.body));
       });
     } else {

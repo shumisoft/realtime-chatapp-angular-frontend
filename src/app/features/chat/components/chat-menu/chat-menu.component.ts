@@ -3,6 +3,8 @@ import { AvatarComponent } from '../../../../shared/components/avatar/avatar.com
 import { Store } from '@ngrx/store';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { CommonModule } from '@angular/common';
+import { tap } from 'rxjs';
+import { ChatRoomType } from '../../../../core/models/chat-room.model';
 
 @Component({
   selector: 'app-chat-menu',
@@ -14,7 +16,15 @@ export class ChatMenuComponent implements OnInit {
   private readonly store = inject(Store);
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
 
-  constructor() {}
+  isDirectMessage!: boolean;
+
+  constructor() {
+    this.selectedChatRoom$
+      .pipe(
+        tap((chatroom) => (this.isDirectMessage = chatroom?.type === ChatRoomType.DIRECT_MESSAGE)),
+      )
+      .subscribe();
+  }
 
   ngOnInit() {}
 }

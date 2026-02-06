@@ -2,9 +2,17 @@
   class="left-bubble outer-container"
   [class.right-bubble]="message.userId === (principalUser$ | async)?.userId"
 >
-  <p class="text-xs">{{ message.userId }}</p>
+  <p
+    class="text-[.65rem] opacity-85"
+    [class.hidden]="
+      message.userId === (principalUser$ | async)?.userId ||
+      isDirectMessageRoom((selectedChatRoom$ | async)?.type)
+    "
+  >
+    {{ message.userId }}
+  </p>
   <p>{{ message.content }}</p>
   <div class="flex">
-    <p class="ml-auto text-xs">{{ message.timestamp | date }}</p>
+    <p class="ml-auto text-[.55rem]">{{ formattedTime(message.timestamp) }}</p>
   </div>
 </div>

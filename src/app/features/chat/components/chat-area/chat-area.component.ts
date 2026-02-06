@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ChatCardComponent } from '../chat-card/chat-card.component';
 import { Store } from '@ngrx/store';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { ChatRoom, Message } from '../../../../core/models/chat-room.model';
 import { loadInitialMessages } from '../../../../core/store/message/message.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
@@ -32,7 +32,15 @@ export class ChatAreaComponent implements OnInit {
         tap((chatRoom) => {
           if (chatRoom) {
             this.store.dispatch(loadInitialMessages({ chatId: chatRoom.chatId }));
-            this.messages$ = this.store.select(selectMessagesByChatId(chatRoom.chatId));
+            this.messages$ = this.store
+              .select(selectMessagesByChatId(chatRoom.chatId))
+              .pipe(
+                map((messages) =>
+                  [...messages].sort(
+                    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+                  ),
+                ),
+              );
             this.hasMore$ = this.store.select(selectChatHasMore(chatRoom.chatId));
             this.loading$ = this.store.select(selectMessageLoading);
           }

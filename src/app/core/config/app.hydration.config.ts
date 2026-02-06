@@ -1,3 +1,4 @@
+import { initialState as userInitialState } from './../store/user/user.reducer';
 export function hydrateAuthState() {
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
@@ -11,10 +12,12 @@ export function hydrateAuthState() {
 }
 
 export function hydrateUserState() {
-  const principalUser = JSON.parse(localStorage.getItem('principalUser') ?? '{}');
+  const principalUser = localStorage.getItem('principalUser');
+
+  const initialState = principalUser ? JSON.parse(principalUser) : userInitialState;
 
   return {
-    ...principalUser,
+    ...initialState,
     loading: false,
     error: null,
   };

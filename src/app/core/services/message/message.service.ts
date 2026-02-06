@@ -22,7 +22,7 @@ export class MessageService {
   }
 
   listenToChat(chatId: number): Observable<Message> {
-    return this.ws.subscribe(`/topic/chat/${chatId}`);
+    return this.ws.subscribe(`/topic/rooms/${chatId}`);
   }
 
   sendMessage(dto: Partial<Message>): void {

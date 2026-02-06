@@ -9,6 +9,9 @@ import {
   selectChatRoomsSorted,
   selectHasMoreChatRooms,
 } from '../../../../core/store/chat-room/chat-room.selectors';
+import { switchMap } from 'rxjs';
+import { MessageService } from '../../../../core/services/message/message.service';
+import { incomingWsMessage } from '../../../../core/store/message/message.actions';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,14 +22,31 @@ import {
 })
 export class SidebarComponent implements OnInit {
   private readonly store = inject(Store);
+  private readonly messageService = inject(MessageService);
 
   rooms$ = this.store.select(selectChatRoomsSorted);
   loading$ = this.store.select(selectChatRoomLoading);
   hasMore$ = this.store.select(selectHasMoreChatRooms);
 
-  constructor() {}
+  constructor() {
+    this.rooms$
+      .pipe(
+        switchMap((rooms) => {
+          if (!rooms || rooms.length === 0) {
+            this.store.dispatch(loadMyChatRooms({ page: 0, size: 20 }));
+          } else {
+            for (let room of rooms) {
+              this.messageService.listenToChat(room.chatId).subscribe((msg) => {
+                this.store.dispatch(incomingWsMessage({ message: msg }));
+              });
+            }
+          }
 
-  ngOnInit() {
-    this.store.dispatch(loadMyChatRooms({ page: 0, size: 20 }));
+          return rooms;
+        }),
+      )
+      .subscribe();
   }
+
+  ngOnInit() {}
 }

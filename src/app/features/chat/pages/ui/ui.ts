@@ -5,6 +5,7 @@ import { MessageService } from '../../../../core/services/message/message.servic
 import { Store } from '@ngrx/store';
 import { selectAcessToken } from '../../../../core/store/auth/auth.selectors';
 import { map, switchMap, tap } from 'rxjs';
+import { getPrincipalUser } from '../../../../core/store/user/user.actions';
 
 @Component({
   selector: 'app-ui',
@@ -28,5 +29,7 @@ export class Ui {
         }),
       )
       .subscribe();
+
+    this.store.dispatch(getPrincipalUser());
   }
 }

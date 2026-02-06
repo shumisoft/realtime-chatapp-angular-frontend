@@ -3,7 +3,7 @@ import { authGuard } from '../../core/guards/auth/auth.guard';
 
 export const USER_ROUTES: Routes = [
   {
-    path: ':userId',
+    path: ':username',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/ui/ui').then((m) => m.Ui),
   },
