@@ -1,5 +1,5 @@
 <div class="w-full gap-2 flex px-4 h-16 items-center bg-top-bar">
   <app-avatar class="h-10 w-10" />
-  <a routerLink="/users/me" class="text-lg truncate">{{ (principleUser$ | async)?.fullName }}</a>
+  <a routerLink="/me" class="text-lg truncate">{{ (principleUser$ | async)?.fullName }}</a>
   <i class="fa-regular fa-square-plus ml-auto text-gray-800 hover:text-green-600 text-2xl"></i>
 </div>

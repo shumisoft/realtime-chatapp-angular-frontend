@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { updatePrincipalUser } from '../../../../core/store/user/user.actions';
+import { updatePrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
 
 @Component({
   selector: 'app-profile-card',

@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectAuthLoading } from '../../../../core/store/auth/auth.selectors';
 import { HotToastService } from '@ngxpert/hot-toast';
-import { getPrincipalUser } from '../../../../core/store/user/user.actions';
-import { selectPrincipleUser } from '../../../../core/store/user/user.selectors';
+import { getPrincipalUser } from '../../../../core/store/principal-user/principal-user.actions';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { ProfileCardComponent } from '../../components/profile-card/profile-card.component';
 import { catchError, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { UserDTOResponse } from '../../../../core/models/user.models';
@@ -30,7 +30,7 @@ export class Ui {
 
   username$!: Observable<string | null>;
   readonly userData$!: Observable<UserDTOResponse | null>;
-  isPrincipleUser = false;
+  isPrincipleUser = signal(false);
   private username!: string | null;
 
   constructor() {
@@ -54,8 +54,10 @@ export class Ui {
           this.router.navigate(['..', 'me'], { relativeTo: this.route });
         }
         if (this.username === 'me') {
-          this.isPrincipleUser = true;
-          this.toast.close('fetching-profile');
+          this.isPrincipleUser.set(true);
+          try {
+            this.toast.close('fetching-profile');
+          } catch (e) {}
           return of(principleUser as unknown as UserDTOResponse);
         }
         if (this.username) {

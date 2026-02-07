@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { Message } from '../../../../core/models/chat-room.model';
 import { Store } from '@ngrx/store';
-import { selectPrincipleUser } from '../../../../core/store/user/user.selectors';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 
 @Component({

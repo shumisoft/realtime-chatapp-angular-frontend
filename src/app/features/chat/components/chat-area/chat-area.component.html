@@ -1,5 +1,12 @@
-<div class="overflow-y-auto flex flex-col-reverse px-16 py-8">
-  @for (message of messages$ | async; track message.messageId) {
-    <app-chat-card [message]="message" />
+<div #scrollContainer class="h-full justify-end-safe overflow-y-auto flex flex-col px-16 py-8">
+  @if (loading$ | async) {
+    <div class="bg-transparent mx-auto flex flex-col items-center">
+      <p>Loading Wheel Here</p>
+      <p>Loading chats</p>
+    </div>
+  } @else {
+    @for (message of messages$ | async; track message.messageId) {
+      <app-chat-card [message]="message" />
+    }
   }
 </div>

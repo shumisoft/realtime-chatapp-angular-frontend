@@ -1,4 +1,13 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+  AfterViewChecked,
+} from '@angular/core';
 import { ChatCardComponent } from '../chat-card/chat-card.component';
 import { Store } from '@ngrx/store';
 import { map, Observable, tap } from 'rxjs';
@@ -18,13 +27,30 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./chat-area.component.css'],
   imports: [CommonModule, ChatCardComponent],
 })
-export class ChatAreaComponent implements OnInit {
+export class ChatAreaComponent implements OnInit, AfterViewInit, AfterViewChecked {
   private readonly store = inject(Store);
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
 
   messages$!: Observable<Message[]>;
   hasMore$!: Observable<boolean>;
   loading$!: Observable<boolean>;
+
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
+  ngAfterViewInit() {
+    this.scrollToBottom();
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom() {
+    try {
+      const el = this.scrollContainer.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    } catch {}
+  }
 
   constructor() {
     this.selectedChatRoom$
@@ -37,7 +63,7 @@ export class ChatAreaComponent implements OnInit {
               .pipe(
                 map((messages) =>
                   [...messages].sort(
-                    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+                    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
                   ),
                 ),
               );

@@ -7,7 +7,7 @@ import {
   updatePrincipalUser,
   updatePrincipalUserFailure,
   updatePrincipalUserSuccess,
-} from './user.actions';
+} from './principal-user.actions';
 
 export const initialState: UserState = {
   userId: null,

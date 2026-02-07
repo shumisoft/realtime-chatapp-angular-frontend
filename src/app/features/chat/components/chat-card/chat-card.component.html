@@ -1,5 +1,5 @@
 <div
-  class="left-bubble outer-container"
+  class="left-bubble chat-bubble-container"
   [class.right-bubble]="message.userId === (principalUser$ | async)?.userId"
 >
   <p
@@ -11,7 +11,7 @@
   >
     {{ message.userId }}
   </p>
-  <p>{{ message.content }}</p>
+  <p class="mr-10">{{ message.content }}</p>
   <div class="flex">
     <p class="ml-auto text-[.55rem]">{{ formattedTime(message.timestamp) }}</p>
   </div>

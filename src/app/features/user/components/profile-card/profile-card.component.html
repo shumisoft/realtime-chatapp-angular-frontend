@@ -88,7 +88,9 @@
           <label class="text-gray-500 font-medium">Bio</label>
           <div class="flex items-first-baseline">
             @if (!editField['bio']) {
-              <span class="block text-gray-900 mt-1">{{ user.bio }}</span>
+              <span [class.opacity-50]="!user.bio" class="block text-gray-900 mt-1">{{
+                user.bio || '[no Bio]'
+              }}</span>
               @if (isPrincipalUser) {
                 <div class="">
                   <button

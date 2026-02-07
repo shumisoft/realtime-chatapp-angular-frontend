@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/user/user.routes').then((m) => m.USER_ROUTES),
   },
   {
+    path: 'me',
+    redirectTo: 'user/me',
+  },
+  {
     path: '**',
     redirectTo: 'auth/login',
   },

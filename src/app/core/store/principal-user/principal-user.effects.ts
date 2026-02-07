@@ -1,18 +1,17 @@
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { UserService } from '../../services/user/user.service';
-import { Router } from '@angular/router';
-import { HotToastService } from '@ngxpert/hot-toast';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { HotToastService } from '@ngxpert/hot-toast';
+import { catchError, exhaustMap, map, of, switchMap, tap } from 'rxjs';
+import { UserService } from '../../services/user/user.service';
 import {
   getPrincipalUser,
   getPrincipalUserFailure,
   getPrincipalUserSuccess,
   updatePrincipalUser,
-  updatePrincipalUserSuccess,
   updatePrincipalUserFailure,
-} from './user.actions';
-import { catchError, exhaustMap, map, of, switchMap, tap } from 'rxjs';
-import { UserState } from '../../models/user.models';
+  updatePrincipalUserSuccess,
+} from './principal-user.actions';
 
 export class UserEffects {
   private readonly actions = inject(Actions);
@@ -26,8 +25,6 @@ export class UserEffects {
       exhaustMap(() =>
         this.userService.getPrincipalUser().pipe(
           map((data) => {
-            console.log(data);
-
             return getPrincipalUserSuccess({ data: { ...data, loading: false, error: null } });
           }),
           catchError((err) => {

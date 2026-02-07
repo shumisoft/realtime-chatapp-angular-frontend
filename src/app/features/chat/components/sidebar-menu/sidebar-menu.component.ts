@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { Store } from '@ngrx/store';
-import { selectPrincipleUser } from '../../../../core/store/user/user.selectors';
+import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
