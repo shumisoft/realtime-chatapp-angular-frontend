@@ -1,6 +1,7 @@
 <div
   (click)="openChat()"
   class="cursor-default w-full py-4 px-4 flex justify-start items-center border-b border-gray-300 hover:bg-gray-100"
+  [class.bg-gray-100]="(selectedChatRoom$ | async)?.chatId === chatroom.chatId"
 >
   <app-avatar class="h-12 w-12 flex items-center justify-center" />
   <div class="ml-2 flex flex-col items-start justify-center">

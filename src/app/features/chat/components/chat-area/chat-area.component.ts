@@ -1,18 +1,12 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  Input,
-  OnInit,
-  ViewChild,
-  AfterViewInit,
-  AfterViewChecked,
-} from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ChatCardComponent } from '../chat-card/chat-card.component';
 import { Store } from '@ngrx/store';
-import { map, Observable, tap } from 'rxjs';
-import { ChatRoom, Message } from '../../../../core/models/chat-room.model';
-import { loadInitialMessages } from '../../../../core/store/message/message.actions';
+import { map, Observable, tap, take, distinctUntilChanged } from 'rxjs';
+import { Message } from '../../../../core/models/chat-room.model';
+import {
+  loadInitialMessages,
+  loadOlderMessages,
+} from '../../../../core/store/message/message.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import {
   selectChatHasMore,
@@ -21,28 +15,140 @@ import {
 } from '../../../../core/store/message/message.selectors';
 import { CommonModule } from '@angular/common';
 
+enum ScrollState {
+  NONE,
+  INITIAL_BOTTOM,
+  WS_BOTTOM,
+  RESTORE_TOP,
+  SCROLL_BOTTOM_ON_CHAT_CHANGE,
+}
+
 @Component({
   selector: 'app-chat-area',
   templateUrl: './chat-area.component.html',
   styleUrls: ['./chat-area.component.css'],
   imports: [CommonModule, ChatCardComponent],
 })
-export class ChatAreaComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class ChatAreaComponent implements OnInit, AfterViewInit {
   private readonly store = inject(Store);
+
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
+  selectedChatRoomId!: number;
 
   messages$!: Observable<Message[]>;
   hasMore$!: Observable<boolean>;
   loading$!: Observable<boolean>;
 
-  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+  @ViewChild('topSentinel') topSentinel!: ElementRef;
 
-  ngAfterViewInit() {
-    this.scrollToBottom();
+  private prevScrollHeight = 0;
+  private scrollState: ScrollState = ScrollState.NONE;
+  private userReadingHistory = false;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.selectedChatRoom$
+      .pipe(
+        tap((chatRoom) => {
+          if (!chatRoom) return;
+
+          this.selectedChatRoomId = chatRoom.chatId;
+
+          // Whenever chat changes -> always scroll to bottom
+          this.scrollState = ScrollState.SCROLL_BOTTOM_ON_CHAT_CHANGE;
+
+          this.store
+            .select(selectMessagesByChatId(chatRoom.chatId))
+            .pipe(take(1))
+            .subscribe((list) => {
+              if (list.length === 0) {
+                this.scrollState = ScrollState.INITIAL_BOTTOM;
+                this.store.dispatch(loadInitialMessages({ chatId: chatRoom.chatId }));
+              }
+            });
+
+          this.messages$ = this.store.select(selectMessagesByChatId(chatRoom.chatId)).pipe(
+            map((messages) =>
+              [...messages].sort(
+                (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+              ),
+            ),
+            distinctUntilChanged((a, b) => a.length === b.length),
+            tap((messages) => this.onMessagesChanged(messages)),
+          );
+
+          this.hasMore$ = this.store.select(selectChatHasMore(chatRoom.chatId));
+          this.loading$ = this.store.select(selectMessageLoading);
+        }),
+      )
+      .subscribe();
   }
 
-  ngAfterViewChecked() {
-    this.scrollToBottom();
+  ngAfterViewInit() {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        if (this.scrollState !== ScrollState.INITIAL_BOTTOM) {
+          this.triggerLazyLoad();
+        }
+      }
+    });
+
+    observer.observe(this.topSentinel.nativeElement);
+  }
+
+  // ------------------------------------------
+  // MESSAGE CHANGE HANDLER
+  // ------------------------------------------
+
+  private onMessagesChanged(messages: Message[]) {
+    if (!messages || messages.length === 0) return;
+
+    const el = this.scrollContainer.nativeElement;
+
+    switch (this.scrollState) {
+      case ScrollState.INITIAL_BOTTOM:
+        this.scrollToBottomDeferred();
+        break;
+
+      case ScrollState.WS_BOTTOM:
+        if (!this.userReadingHistory) this.scrollToBottomDeferred();
+        break;
+
+      case ScrollState.RESTORE_TOP:
+        this.restoreScrollPosition();
+        break;
+
+      case ScrollState.SCROLL_BOTTOM_ON_CHAT_CHANGE:
+        this.scrollToBottomDeferred();
+        break;
+    }
+
+    this.scrollState = ScrollState.NONE;
+  }
+
+  private restoreScrollPosition() {
+    const el = this.scrollContainer.nativeElement;
+
+    requestAnimationFrame(() => {
+      const newHeight = el.scrollHeight;
+      const diff = newHeight - this.prevScrollHeight;
+
+      el.scrollTop = diff;
+    });
+  }
+
+  // ------------------------------------------
+  // SCROLL HELPERS
+  // ------------------------------------------
+
+  private scrollToBottomDeferred() {
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.scrollToBottom();
+      }),
+    );
   }
 
   private scrollToBottom() {
@@ -52,28 +158,21 @@ export class ChatAreaComponent implements OnInit, AfterViewInit, AfterViewChecke
     } catch {}
   }
 
-  constructor() {
-    this.selectedChatRoom$
-      .pipe(
-        tap((chatRoom) => {
-          if (chatRoom) {
-            this.store.dispatch(loadInitialMessages({ chatId: chatRoom.chatId }));
-            this.messages$ = this.store
-              .select(selectMessagesByChatId(chatRoom.chatId))
-              .pipe(
-                map((messages) =>
-                  [...messages].sort(
-                    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-                  ),
-                ),
-              );
-            this.hasMore$ = this.store.select(selectChatHasMore(chatRoom.chatId));
-            this.loading$ = this.store.select(selectMessageLoading);
-          }
-        }),
-      )
-      .subscribe();
+  triggerLazyLoad() {
+    const el = this.scrollContainer.nativeElement;
+    this.prevScrollHeight = el.scrollHeight;
+    this.scrollState = ScrollState.RESTORE_TOP;
+
+    this.store.dispatch(loadOlderMessages({ chatId: this.selectedChatRoomId }));
   }
 
-  ngOnInit() {}
+  onScroll(event: any) {
+    const el = event.target;
+    const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    this.userReadingHistory = distFromBottom > 200;
+  }
+
+  handleIncomingWSMessage() {
+    this.scrollState = ScrollState.WS_BOTTOM;
+  }
 }

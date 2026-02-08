@@ -8,6 +8,7 @@ import {
   selectChatRoomLoading,
   selectChatRoomsSorted,
   selectHasMoreChatRooms,
+  selectSelectedChatRoom,
 } from '../../../../core/store/chat-room/chat-room.selectors';
 import { switchMap } from 'rxjs';
 import { MessageService } from '../../../../core/services/message/message.service';
@@ -23,6 +24,8 @@ import { incomingWsMessage } from '../../../../core/store/message/message.action
 export class SidebarComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly messageService = inject(MessageService);
+
+  readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
 
   rooms$ = this.store.select(selectChatRoomsSorted);
   loading$ = this.store.select(selectChatRoomLoading);

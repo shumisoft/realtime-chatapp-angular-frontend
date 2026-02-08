@@ -54,7 +54,7 @@ export const messageReducer = createReducer(
       meta: {
         ...state.meta,
         [chatId]: {
-          page: state.meta[chatId].page + 1,
+          page: state.meta[chatId]?.page + 1,
           hasMore,
         },
       },
