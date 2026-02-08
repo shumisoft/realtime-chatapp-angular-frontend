@@ -3,7 +3,7 @@
   [class.right-bubble]="message.userId === (principalUser$ | async)?.userId"
 >
   <p
-    class="text-[.65rem] font-bold mb-1 mr-10"
+    class="text-[.65rem] font-bold mb-1 mr-8"
     [class.hidden]="
       message.userId === (principalUser$ | async)?.userId ||
       isDirectMessageRoom((selectedChatRoom$ | async)?.type)
