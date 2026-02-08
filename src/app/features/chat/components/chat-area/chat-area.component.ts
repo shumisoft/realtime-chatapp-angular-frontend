@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, OnInit, ViewChild, AfterViewInit } from 
 import { ChatCardComponent } from '../chat-card/chat-card.component';
 import { Store } from '@ngrx/store';
 import { map, Observable, tap, take, distinctUntilChanged } from 'rxjs';
-import { Message } from '../../../../core/models/chat-room.model';
+import { Message } from '../../../../core/models/message.model';
 import {
   loadInitialMessages,
   loadOlderMessages,

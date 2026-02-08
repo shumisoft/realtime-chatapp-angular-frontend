@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { ChatRoom, PaginatedChatRooms } from '../../models/chat-room.model';
+import { ChatRoom, PaginatedChatRooms } from '../../models/message.model';
 import { Observable } from 'rxjs';
 
 @Injectable({

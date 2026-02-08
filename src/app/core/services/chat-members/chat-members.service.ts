@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ChatRoomMember } from '../../models/message.model';
 
 @Injectable({
   providedIn: 'root',
@@ -8,11 +10,11 @@ export class ChatMembersService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `http://localhost:5421/chat/members`;
 
-  getMembers(chatId: number) {
-    return this.http.get(`${this.baseUrl}/rooms/${chatId}/members`);
+  getMembers(chatId: number): Observable<ChatRoomMember[]> {
+    return this.http.get<ChatRoomMember[]>(`${this.baseUrl}/rooms/${chatId}/members`);
   }
 
-  addMember(chatId: number, body: any) {
+  addMember(chatId: number, body: Partial<ChatRoomMember>) {
     return this.http.post(`${this.baseUrl}/rooms/${chatId}/members`, body);
   }
 

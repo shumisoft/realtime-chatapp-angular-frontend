@@ -1,3 +1,5 @@
+import { User } from './user.models';
+
 export enum ChatRoomType {
   PUBLIC = 'PUBLIC',
   PRIVATE = 'PRIVATE',
@@ -19,9 +21,17 @@ export interface ChatRoom {
   chatId: number;
   name: string;
   type: ChatRoomType;
+  members: ChatRoomMember[];
   createdAt: string | null;
   description: string;
   latestMessage?: Message | null;
+}
+
+export interface ChatRoomMember {
+  chatId: number;
+  userId: string;
+  admin: boolean;
+  user: User;
 }
 
 export interface PaginatedChatRooms {

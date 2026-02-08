@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { ChatRoom } from '../../models/chat-room.model';
+import { ChatRoom } from '../../models/message.model';
 import {
   clearChatRooms,
   createChatRoomSuccess,

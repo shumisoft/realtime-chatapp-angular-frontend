@@ -3,13 +3,14 @@
   [class.right-bubble]="message.userId === (principalUser$ | async)?.userId"
 >
   <p
-    class="text-[.65rem] opacity-85"
+    class="text-[.65rem] font-bold mb-1 mr-10"
     [class.hidden]="
       message.userId === (principalUser$ | async)?.userId ||
       isDirectMessageRoom((selectedChatRoom$ | async)?.type)
     "
+    [style.color]="selectUserColorById$(message.userId) | async"
   >
-    {{ message.userId }}
+    {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
   <p class="mr-10">{{ message.content }}</p>
   <div class="flex">

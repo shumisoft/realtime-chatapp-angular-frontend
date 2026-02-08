@@ -16,7 +16,7 @@ export interface EditUserRequest {
   bio: string | null;
 }
 
-export interface UserDTOResponse {
+export interface User {
   userId: string | null;
   username: string | null;
   email: string;

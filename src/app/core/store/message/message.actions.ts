@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Message } from '../../models/chat-room.model';
+import { Message } from '../../models/message.model';
 
 //
 // LOAD INITIAL MESSAGES (FIRST PAGE)

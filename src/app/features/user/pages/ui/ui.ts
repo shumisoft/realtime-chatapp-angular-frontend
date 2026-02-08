@@ -6,7 +6,7 @@ import { getPrincipalUser } from '../../../../core/store/principal-user/principa
 import { selectPrincipleUser } from '../../../../core/store/principal-user/principal-user.selectors';
 import { ProfileCardComponent } from '../../components/profile-card/profile-card.component';
 import { catchError, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
-import { UserDTOResponse } from '../../../../core/models/user.models';
+import { User } from '../../../../core/models/user.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../core/services/user/user.service';
 
@@ -29,7 +29,7 @@ export class Ui {
   readonly principalUser$ = this.store.select(selectPrincipleUser);
 
   username$!: Observable<string | null>;
-  readonly userData$!: Observable<UserDTOResponse | null>;
+  readonly userData$!: Observable<User | null>;
   isPrincipleUser = signal(false);
   private username!: string | null;
 
@@ -58,7 +58,7 @@ export class Ui {
           try {
             this.toast.close('fetching-profile');
           } catch (e) {}
-          return of(principleUser as unknown as UserDTOResponse);
+          return of(principleUser as unknown as User);
         }
         if (this.username) {
           return this.userService.getUserById(this.username).pipe(

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import * as MessageActions from './message.actions';
-import { Message } from '../../models/chat-room.model';
+import { Message } from '../../models/message.model';
 
 export interface ChatMessageMeta {
   page: number; // Next page to request

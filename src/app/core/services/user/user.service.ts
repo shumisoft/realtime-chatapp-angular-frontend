@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { EditUserRequest, UserDTOResponse } from '../../models/user.models';
+import { EditUserRequest, User } from '../../models/user.models';
 
 @Injectable({
   providedIn: 'root',
@@ -10,16 +10,16 @@ export class UserService {
   private readonly http = inject(HttpClient);
   private readonly userGateway = 'http://localhost:5421/users';
 
-  getPrincipalUser(): Observable<UserDTOResponse> {
-    return this.http.get<UserDTOResponse>(`${this.userGateway}/me`);
+  getPrincipalUser(): Observable<User> {
+    return this.http.get<User>(`${this.userGateway}/me`);
   }
 
-  updatePrincipalUser(payload: EditUserRequest): Observable<UserDTOResponse> {
-    return this.http.patch<UserDTOResponse>(`${this.userGateway}/me`, payload);
+  updatePrincipalUser(payload: EditUserRequest): Observable<User> {
+    return this.http.patch<User>(`${this.userGateway}/me`, payload);
   }
 
-  getUserById(userId: string): Observable<UserDTOResponse> {
-    return this.http.get<UserDTOResponse>(`${this.userGateway}/lookup`, {
+  getUserById(userId: string): Observable<User> {
+    return this.http.get<User>(`${this.userGateway}/lookup`, {
       params: {
         username: userId,
       },

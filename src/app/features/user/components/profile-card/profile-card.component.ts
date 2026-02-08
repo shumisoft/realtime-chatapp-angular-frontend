@@ -2,7 +2,7 @@ import { EditUserRequest } from './../../../../core/models/user.models';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { map, Observable } from 'rxjs';
-import { UserDTOResponse, UserState } from '../../../../core/models/user.models';
+import { User, UserState } from '../../../../core/models/user.models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,7 +22,7 @@ export class ProfileCardComponent implements OnInit {
   private readonly toast = inject(HotToastService);
 
   @Input() loading!: Observable<boolean>;
-  @Input() userData!: Observable<UserDTOResponse | null>;
+  @Input() userData!: Observable<User | null>;
   @Input() isPrincipalUser!: boolean;
 
   form: any = {};

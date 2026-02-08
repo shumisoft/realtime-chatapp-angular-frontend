@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { CommonModule } from '@angular/common';
 import { tap } from 'rxjs';
-import { ChatRoomType } from '../../../../core/models/chat-room.model';
+import { ChatRoomType } from '../../../../core/models/message.model';
 
 @Component({
   selector: 'app-chat-menu',

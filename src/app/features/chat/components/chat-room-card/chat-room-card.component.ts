@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import { ChatRoom } from '../../../../core/models/chat-room.model';
+import { ChatRoom } from '../../../../core/models/message.model';
 import { Store } from '@ngrx/store';
 import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { createMessage } from '../../../../core/store/message/message.actions';
-import { ChatRoom, Message } from '../../../../core/models/chat-room.model';
+import { ChatRoom, Message } from '../../../../core/models/message.model';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { switchMap, tap } from 'rxjs';
 

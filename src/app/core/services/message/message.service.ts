@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { WebsocketService } from '../ws/websocket.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Message, PaginatedMessages } from '../../models/chat-room.model';
+import { Message, PaginatedMessages } from '../../models/message.model';
 
 @Injectable({
   providedIn: 'root',
