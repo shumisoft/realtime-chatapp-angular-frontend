@@ -2,9 +2,12 @@
   @if (selectedChatRoom$ | async) {
     <app-avatar class="h-10 w-10" />
     <div class="ml-2 flex flex-col items-start justify-center">
-      <h2 class="text-lg leading-5 font-medium">{{ (selectedChatRoom$ | async)?.name }}</h2>
-      <p class="text-sm text-gray-500">Last Seen: WIP</p>
-      {{ isDirectMessage }}
+      <h2 class="text-lg leading-5 font-medium">
+        {{ roomName(selectedChatRoom$ | async, principalUser$ | async) }}
+      </h2>
+      <p class="text-sm text-gray-500">
+        {{ roomSubtitle(selectedChatRoom$ | async) }}
+      </p>
     </div>
   }
 </div>

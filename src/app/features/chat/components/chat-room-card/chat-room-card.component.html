@@ -5,7 +5,7 @@
 >
   <app-avatar class="h-12 w-12 flex items-center justify-center" />
   <div class="ml-2 flex flex-col items-start justify-center">
-    <h2 class="text-xl font-medium">{{ chatroom.name }}</h2>
+    <h2 class="text-xl font-medium">{{ roomName(chatroom, principalUser$ | async) }}</h2>
     <p class="text-sm text-gray-500 line-clamp-1">{{ chatroom.latestMessage?.content }}</p>
   </div>
 </div>

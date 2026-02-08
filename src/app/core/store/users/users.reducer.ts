@@ -12,7 +12,17 @@ export const initialState: UserState = {
   colors: {},
 };
 
-const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
+const randomColor = () => {
+  const r = Math.floor(Math.random() * 150); // 0-127
+  const g = Math.floor(Math.random() * 150); // 0-127
+  const b = Math.floor(Math.random() * 150); // 0-127
+  return (
+    '#' +
+    r.toString(16).padStart(2, '0') +
+    g.toString(16).padStart(2, '0') +
+    b.toString(16).padStart(2, '0')
+  );
+};
 
 export const usersReducer = createReducer(
   initialState,
