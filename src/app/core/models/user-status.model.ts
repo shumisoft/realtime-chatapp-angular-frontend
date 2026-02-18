@@ -9,6 +9,6 @@ export interface UserStatusResponse {
 }
 
 export enum OnlineStatusType {
-  ONLINE,
-  OFFLINE,
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
 }
