@@ -9,7 +9,11 @@
   >
     {{ (selectUserById$(message.userId) | async)?.fullName }}
   </p>
-  <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
+  @if (isImage()) {
+    <img class="my-2 rounded" src="{{ message.content }}" alt="" />
+  } @else {
+    <p class="mr-10 whitespace-pre-wrap">{{ message.content }}</p>
+  }
   <div class="flex text-[.55rem] items-center gap-1">
     <p class="ml-auto">
       {{ formattedTime(message.timestamp) }}

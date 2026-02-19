@@ -3,13 +3,14 @@ import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { debounceTime, Subject, takeUntil, tap } from 'rxjs';
-import { ChatRoom, TypingEventDTO } from '../../../../core/models/message.model';
+import { ChatRoom, MessageType, TypingEventDTO } from '../../../../core/models/message.model';
 import { UserState } from '../../../../core/models/user.models';
 import { MessageService } from '../../../../core/services/message/message.service';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
 import { AttachFile, Send } from '../../../../shared/components/icons';
-import { ImagePreview } from "../../../../shared/components/image-preview/image-preview";
-import { ImageViewerModal } from "../../../../shared/components/image-viewer-modal/image-viewer-modal";
+import { ImagePreview } from '../../../../shared/components/image-preview/image-preview';
+import { ImageViewerModal } from '../../../../shared/components/image-viewer-modal/image-viewer-modal';
+import { StorageService } from '../../../../core/services/storage/storage.service';
 
 @Component({
   selector: 'app-chat-input-area',
@@ -22,6 +23,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
 
   private readonly store = inject(Store);
   private readonly messageService = inject(MessageService);
+  private readonly storageService = inject(StorageService);
 
   readonly selectedChatRoom$ = this.store.select(selectSelectedChatRoom);
 
@@ -34,6 +36,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   private isTyping = false;
+  isUploading = false;
 
   selectedImageFile: File | null = null;
   imagePreviewUrl: string | null = null;
@@ -62,24 +65,71 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   }
 
   onSend(): void {
+    console.log('upload');
+
     const trimmedContent = this.message.trim();
-    if (!trimmedContent) return;
+    if (!trimmedContent && !this.selectedImageFile) return;
+    console.log('upload');
 
-    // this.store.dispatch(
-    //   createMessage({
-    //     chatId: this.selectedchatroom?.chatId,
-    //     dto: { content: this.message },
-    //   }),
-    // );
+    if (this.isUploading) return;
+    console.log('upload');
 
-    this.messageService.sendMessage({
-      chatRoomId: this.selectedchatroom?.chatId,
-      content: trimmedContent,
-    });
+    const chatId = this.selectedchatroom?.chatId;
+    if (!chatId) return;
+
+    console.log('upload');
+
+    // SCENARIO 1: Image Upload (with or without text)
+    if (this.selectedImageFile) {
+      this.isUploading = true;
+
+      this.storageService.uploadFile(this.selectedImageFile).subscribe({
+        next: (imageUrl) => {
+          // 1. Send the Image Message
+          this.messageService.sendMessage({
+            chatRoomId: chatId,
+            content: imageUrl,
+            type: MessageType.IMAGE,
+          });
+
+          // 2. If there was also text, send it as a separate message
+          if (trimmedContent) {
+            this.messageService.sendMessage({
+              chatRoomId: chatId,
+              content: trimmedContent,
+            });
+          }
+
+          // 3. Cleanup
+          this.resetInput();
+        },
+        error: (err) => {
+          console.error('Upload Failed', err);
+          this.isUploading = false;
+          // Optionally show a toast notification here
+        },
+      });
+    }
+    // SCENARIO 2: Text Only
+    else {
+      this.messageService.sendMessage({
+        chatRoomId: chatId,
+        content: trimmedContent,
+      });
+      this.resetInput();
+    }
 
     // IMPORTANT → stop typing when sending
     this.stopTyping();
     this.message = '';
+  }
+
+  // Helper to clean up state after sending
+  private resetInput() {
+    this.message = '';
+    this.removeSelectedImage();
+    this.stopTyping();
+    this.isUploading = false;
   }
 
   onTyping(value: string) {
@@ -154,7 +204,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
 
   openViewer() {
     this.isViewerOpen = true;
-    console.log("image clicked");
+    console.log('image clicked');
   }
 
   closeViewer() {

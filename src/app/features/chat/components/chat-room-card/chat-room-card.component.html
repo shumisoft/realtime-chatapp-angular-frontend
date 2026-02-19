@@ -20,7 +20,9 @@
         <span class="typing-dots">{{ typing }}</span>
       </p>
     } @else {
-      <p class="ml-0.5 text-sm text-gray-500 line-clamp-1">{{ chatroom.latestMessage?.content }}</p>
+      <p class="ml-0.5 text-sm text-gray-500 line-clamp-1">
+        {{ isLatestMessageImage() ? 'Shared an image.' : chatroom.latestMessage?.content }}
+      </p>
     }
   </div>
 </div>

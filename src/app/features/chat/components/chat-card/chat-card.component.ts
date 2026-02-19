@@ -1,3 +1,4 @@
+import { MessageType } from './../../../../core/models/message.model';
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -33,7 +34,7 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
 
   @Output() onRead = new EventEmitter<boolean>();
 
-  private el = inject(ElementRef);
+  private readonly el = inject(ElementRef);
   private observer!: IntersectionObserver;
 
   private readonly store = inject(Store);
@@ -57,6 +58,10 @@ export class ChatCardComponent implements AfterViewInit, OnDestroy {
 
   isDirectMessageRoom(): boolean {
     return this.selectedChatRoom?.type === ChatRoomType.DIRECT_MESSAGE;
+  }
+
+  isImage(): boolean {
+    return this.message.type === MessageType.IMAGE;
   }
 
   ngAfterViewInit() {

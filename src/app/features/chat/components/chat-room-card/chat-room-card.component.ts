@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
-import { ChatRoom, ChatRoomType } from '../../../../core/models/message.model';
+import { ChatRoom, ChatRoomType, MessageType } from '../../../../core/models/message.model';
 import { Store } from '@ngrx/store';
 import { selectChatRoom } from '../../../../core/store/chat-room/chat-room.actions';
 import { selectSelectedChatRoom } from '../../../../core/store/chat-room/chat-room.selectors';
@@ -25,7 +25,7 @@ export class ChatRoomCardComponent implements OnInit {
   constructor() {}
 
   showTyping$!: Observable<string | null>;
-  
+
   ngOnInit() {
     combineLatest([this.principalUser$, this.selectedChatRoom$]).subscribe(
       ([principal, selectedRoom]) => {
@@ -47,6 +47,10 @@ export class ChatRoomCardComponent implements OnInit {
         );
       },
     );
+  }
+
+  isLatestMessageImage() {
+    return this.chatroom.latestMessage?.type === MessageType.IMAGE;
   }
 
   openChat() {
